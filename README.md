@@ -1,0 +1,2 @@
+# servcotiza
+Servidor de PlataformaSM
