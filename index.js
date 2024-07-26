@@ -7,10 +7,10 @@ app.use(cors());
 app.use(express.json());
 
 const db = mysql.createConnection({
-    host:"localhost",
-    user: "root",
-    password: "",
-    database: "cotizador"
+    host:"sealmarket.mx",
+    user: "sealmark_cotizauser",
+    password: "Trof#4102",
+    database: "sealmark_cotizador"
 });
 
 app.get("/getmargen",(req,res)=>{
