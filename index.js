@@ -41,6 +41,19 @@ app.get("/getfamilias",(req,res)=>{
     );
 })
 
+app.get("/margenes",(req,res)=>{
+    
+    db.query('SELECT * FROM margenes',
+        (err,result)=>{
+            if(err){
+                console.groupCollapsed(err);
+            }else{
+                res.send(result);
+            }
+        }
+    );
+})
+
 app.listen(3001,()=>{
     console.log("Corriendo en el puerto 3001")
 })
