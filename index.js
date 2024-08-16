@@ -35,7 +35,10 @@ app.put("/actualiza",(req,res)=>{
     const sucTec="Tecmin";
 
     cambiaron.forEach(element => {
-        console.log(element);
+        if(element===sucDgo){
+            console.log("Dentro de if");
+        }
+        
     });
 
     db.query('UPDATE margenes SET margen=? WHERE sucursal=? AND familia=?' ,[margenDgo,sucDgo,familia],
