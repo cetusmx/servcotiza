@@ -34,10 +34,10 @@ app.put("/actualiza",(req,res)=>{
     const sucZac="Zacatecas";
     const sucTec="Tecmin";
 
-    cambiaron.array.forEach(element => {
+    cambiaron.forEach(element => {
         console.log(element);
     });
-    
+
     db.query('UPDATE margenes SET margen=? WHERE sucursal=? AND familia=?' ,[margenDgo,sucDgo,familia],
         (err,result)=>{
             if(err){
