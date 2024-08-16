@@ -15,11 +15,74 @@ const db = mysql.createConnection({
 
 
 app.put("/actualiza",(req,res)=>{
-    console.log(req.method);
+    /* console.log(req.method);
     console.log(req.body);
     console.log(req.body.fa);
     console.log(req.body.du);
     res.send();
+ */
+    const familia = req.body.fa;
+    const margenDgo = req.body.du;
+    const margenFllo = req.body.fr;
+    const margenMaz = req.body.ma;
+    const margenZac = req.body.za;
+    const margenTecmin = req.body.te;
+    const sucDgo="Durango";
+    const sucFllo="Fresnillo";
+    const sucMzt="Mazatlán";
+    const sucZac="Zacatecas";
+    const sucTec="Tecmin";
+
+    db.query('UPDATE margenes SET margen=? WHERE sucursal=? AND familia=?',[margenDgo,sucDgo,familia],
+        (err,result)=>{
+            if(err){
+                console.groupCollapsed(err);
+            }else{
+                //res.send(result);
+            }
+        }
+    );
+    db.query('UPDATE margenes SET margen=? WHERE sucursal=? AND familia=?',[margenFllo,sucFllo,familia],
+        (err,result)=>{
+            if(err){
+                console.groupCollapsed(err);
+            }else{
+                //res.send(result);
+            }
+        }
+    );
+    db.query('UPDATE margenes SET margen=? WHERE sucursal=? AND familia=?',[margenMaz,sucMzt,familia],
+        (err,result)=>{
+            if(err){
+                console.groupCollapsed(err);
+            }else{
+                //res.send(result);
+            }
+        }
+    );
+    db.query('UPDATE margenes SET margen=? WHERE sucursal=? AND familia=?',[margenZac,sucZac,familia],
+        (err,result)=>{
+            if(err){
+                console.groupCollapsed(err);
+            }else{
+                //res.send(result);
+            }
+        }
+    );
+    db.query('UPDATE margenes SET margen=? WHERE sucursal=? AND familia=?',[margenTecmin,sucTec,familia],
+        (err,result)=>{
+            if(err){
+                console.groupCollapsed(err);
+            }else{
+                res.send(result);
+            }
+        }
+    );
+
+
+
+
+
 })
 
 
