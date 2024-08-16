@@ -33,7 +33,7 @@ app.put("/actualiza",(req,res)=>{
     const sucZac="Zacatecas";
     const sucTec="Tecmin";
 
-    db.query('UPDATE margenes SET margen=? WHERE sucursal="Durango" AND familia=?;UPDATE margenes SET margen=? WHERE sucursal="Fresnillo" AND familia=?' ,[margenDgo,familia,margenFllo,familia],
+    db.query('UPDATE margenes SET margen=? WHERE sucursal=? AND familia=?;UPDATE margenes SET margen=? WHERE sucursal=? AND familia=?' ,[margenDgo,sucDgo,familia,margenFllo,sucFllo,familia],
         (err,result)=>{
             if(err){
                 console.groupCollapsed(err);
