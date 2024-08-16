@@ -13,6 +13,14 @@ const db = mysql.createConnection({
     database: "sealmark_cotizador"
 });
 
+
+app.put("/actualiza",(req,res)=>{
+    console.log(req.method);
+    res.send();
+})
+
+
+
 app.get("/getmargen",(req,res)=>{
     const familia = req.query.familia;
     const sucursal = req.query.sucursal;
