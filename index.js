@@ -84,6 +84,7 @@ app.put("/actualiza", (req, res) => {
             }
         );
     }
+    console.log(result);
     res.send(result);
 })
 
