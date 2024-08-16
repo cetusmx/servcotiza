@@ -33,7 +33,7 @@ app.put("/actualiza",(req,res)=>{
     const sucZac="Zacatecas";
     const sucTec="Tecmin";
 
-    db.query('UPDATE margenes SET margen=? WHERE sucursal=? AND familia=?',[margenDgo,sucDgo,familia],
+    db.query('UPDATE margenes SET margen=? WHERE sucursal="Durango" AND familia=?;UPDATE margenes SET margen=? WHERE sucursal="Fresnillo" AND familia=?' ,[margenDgo,familia,margenFllo,familia],
         (err,result)=>{
             if(err){
                 console.groupCollapsed(err);
@@ -42,7 +42,7 @@ app.put("/actualiza",(req,res)=>{
             }
         }
     );
-    db.query('UPDATE margenes SET margen=? WHERE sucursal=? AND familia=?',[margenFllo,sucFllo,familia],
+    /* db.query('UPDATE margenes SET margen=? WHERE sucursal=? AND familia=?',[margenFllo,sucFllo,familia],
         (err,result)=>{
             if(err){
                 console.groupCollapsed(err);
@@ -50,7 +50,7 @@ app.put("/actualiza",(req,res)=>{
                 //res.send(result);
             }
         }
-    );
+    ); */
     db.query('UPDATE margenes SET margen=? WHERE sucursal=? AND familia=?',[margenMaz,sucMzt,familia],
         (err,result)=>{
             if(err){
