@@ -27,12 +27,17 @@ app.put("/actualiza",(req,res)=>{
     const margenMaz = req.body.ma;
     const margenZac = req.body.za;
     const margenTecmin = req.body.te;
+    const cambiaron=req.body.cambios;
     const sucDgo="Durango";
     const sucFllo="Fresnillo";
     const sucMzt="Mazatlán";
     const sucZac="Zacatecas";
     const sucTec="Tecmin";
 
+    cambiaron.array.forEach(element => {
+        console.log(element);
+    });
+    
     db.query('UPDATE margenes SET margen=? WHERE sucursal=? AND familia=?' ,[margenDgo,sucDgo,familia],
         (err,result)=>{
             if(err){
