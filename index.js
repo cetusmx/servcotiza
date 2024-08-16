@@ -16,6 +16,10 @@ const db = mysql.createConnection({
 
 app.put("/actualiza",(req,res)=>{
     console.log(req.method);
+    console.log(req.query.fa)
+    console.log(req.params)
+    console.log(req.params.fa)
+    console.log(req.params.du)
     res.send();
 })
 
