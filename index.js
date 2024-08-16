@@ -36,8 +36,10 @@ app.put("/actualiza",(req,res)=>{
 
     if(cambiaron.includes(sucDgo)){
         console.log("Dentro de if");
+    }else{
+        console.log("No entró al if");
     }
-    
+
     db.query('UPDATE margenes SET margen=? WHERE sucursal=? AND familia=?' ,[margenDgo,sucDgo,familia],
         (err,result)=>{
             if(err){
