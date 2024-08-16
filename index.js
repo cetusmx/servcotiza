@@ -34,13 +34,10 @@ app.put("/actualiza",(req,res)=>{
     const sucZac="Zacatecas";
     const sucTec="Tecmin";
 
-    cambiaron.forEach(element => {
-        if(element===sucDgo){
-            console.log("Dentro de if");
-        }
-        
-    });
-
+    if(cambiaron.includes(sucDgo)){
+        console.log("Dentro de if");
+    }
+    
     db.query('UPDATE margenes SET margen=? WHERE sucursal=? AND familia=?' ,[margenDgo,sucDgo,familia],
         (err,result)=>{
             if(err){
