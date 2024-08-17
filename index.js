@@ -38,7 +38,7 @@ app.put("/actualiza", (req, res) => {
                     console.groupCollapsed(err);
                 } else {
                     resultado.push(result);
-                    res.send(result);
+                    //res.send(result);
                 }
             }
         );
@@ -50,7 +50,7 @@ app.put("/actualiza", (req, res) => {
                     console.groupCollapsed(err);
                 } else {
                     resultado.push(result);
-                    res.send(result);
+                    //res.send(result);
                 }
             }
         );
@@ -62,7 +62,7 @@ app.put("/actualiza", (req, res) => {
                     console.groupCollapsed(err);
                 } else {
                     resultado.push(result);
-                    res.send(result);
+                    //res.send(result);
                 }
             }
         );
@@ -74,7 +74,7 @@ app.put("/actualiza", (req, res) => {
                     console.groupCollapsed(err);
                 } else {
                     resultado.push(result);
-                    res.send(result);
+                    //res.send(result);
                 }
             }
         );
@@ -86,7 +86,7 @@ app.put("/actualiza", (req, res) => {
                     console.groupCollapsed(err);
                 } else {
                     resultado.push(result);
-                    res.send(result);
+                    //res.send(result);
                 }
             }
         );
