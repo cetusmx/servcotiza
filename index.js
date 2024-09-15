@@ -138,6 +138,20 @@ app.get("/margenes", (req, res) => {
     );
 })
 
+app.get("/getprecios", (req, res) => {
+    const sucursal = req.query.sucursal;
+    db.query('SELECT clave, precio FROM precios WHERE sucursal=?', [sucursal],
+        (err, result) => {
+            if (err) {
+                console.groupCollapsed(err);
+            } else {
+                res.send(result);
+                //console.log(result);
+            }
+        }
+    );
+})
+
 app.listen(3001, () => {
     console.log("Corriendo en el puerto 3001")
 })
