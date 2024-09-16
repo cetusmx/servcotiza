@@ -140,7 +140,7 @@ app.get("/margenes", (req, res) => {
 
 app.get("/getprecios", (req, res) => {
     const sucursal = req.query.sucursal;
-    db.query('SELECT clave, precio FROM precios WHERE sucursal=?', [sucursal],
+    db.query('SELECT TOP 100 clave, precio FROM precios WHERE sucursal=?', [sucursal],
         (err, result) => {
             if (err) {
                 console.groupCollapsed(err);
