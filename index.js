@@ -140,7 +140,7 @@ app.get("/margenes", (req, res) => {
 
 app.get("/getprecios", (req, res) => {
     const sucursal = req.query.sucursal;
-    db.query('SELECT clave, precio, precioIVA FROM preciosView WHERE sucursal=? LIMIT 100', [sucursal],
+    db.query('SELECT clave, precio, precioIVA FROM preciosView WHERE sucursal=?', [sucursal],
         (err, result) => {
             if (err) {
                 console.groupCollapsed(err);
