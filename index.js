@@ -138,6 +138,19 @@ app.get("/margenes", (req, res) => {
     );
 })
 
+app.get("/getpreciosall", (req, res) => {
+
+    db.query('SELECT clave, precio, sucursal FROM precios',
+        (err, result) => {
+            if (err) {
+                console.groupCollapsed(err);
+            } else {
+                res.send(result);
+            }
+        }
+    );
+})
+
 app.get("/getprecios", (req, res) => {
     const sucursal = req.query.sucursal;
     db.query('SELECT clave, precio, precioIVA FROM preciosView WHERE sucursal=?', [sucursal],
