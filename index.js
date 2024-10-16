@@ -114,7 +114,7 @@ app.post("/updateListaPrecios", (req, res) => {
         
     });
 
-    return res.send(INSERTED);
+    return res.send("INSERTED");
 })
 
 app.get("/getmargen", (req, res) => {
