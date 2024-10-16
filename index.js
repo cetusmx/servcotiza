@@ -31,7 +31,7 @@ app.put("/actualiza", (req, res) => {
     const sucZac = "Zacatecas";
     const sucTec = "Tecmin";
 
-    var resultado=[];
+    var resultado = [];
 
     if (cambiaron.includes(sucDgo)) {
         db.query('UPDATE margenes SET margen=? WHERE sucursal=? AND familia=?', [margenDgo, sucDgo, familia],
@@ -98,9 +98,14 @@ app.put("/actualiza", (req, res) => {
 })
 
 app.post("/updateListaPrecios", (req, res) => {
+    const data = req.body;
+    console.log('Received data:', data);
+    res.status(200).json({ message: 'Data received successfully.' });
+});
+
+/* app.post("/updateListaPrecios", (req, res) => {
     console.log(req.body);
 
-    /* req.body.forEach(element => { */
     req.body.map(element => {
         console.log(element);
 
@@ -123,7 +128,7 @@ app.post("/updateListaPrecios", (req, res) => {
     });
 
     return res.send("INSERTED");
-})
+}) */
 
 app.get("/getmargen", (req, res) => {
     const familia = req.query.familia;
