@@ -95,7 +95,26 @@ app.put("/actualiza", (req, res) => {
     res.send(resultado);
 })
 
+app.post("/updateListaPrecios", (req, res) => {
+    req.body.forEach(element => {
 
+        const clave = element.clave;
+        const precio = element.precio;
+        const sucursal = element.sucursal;
+
+        db.query('INSERT INTO precios values(?,?,?)', [clave,precio,sucursal],
+            (err, result) => {
+                if(err)
+                {
+                    return res.send(err)
+                }
+            }
+        );
+        
+    });
+
+    return res.send(INSERTED);
+})
 
 app.get("/getmargen", (req, res) => {
     const familia = req.query.familia;
