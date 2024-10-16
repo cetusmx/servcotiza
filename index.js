@@ -5,6 +5,7 @@ const cors = require("cors");
 
 app.use(cors());
 app.use(express.json());
+app.use(bodyParser.json({ limit: '100mb' }));
 
 const db = mysql.createConnection({
     host: "sealmarket.mx",
