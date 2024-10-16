@@ -102,9 +102,9 @@ app.post("/updateListaPrecios", (req, res) => {
     req.body.map(element => {
         console.log(element);
 
-        const clave = element.clave;
-        const precio = element.precio;
-        const sucursal = element.sucursal;
+        const clave = element.Clave;
+        const precio = element.Precio;
+        const sucursal = element.Sucursal;
 
         console.log(clave + "-" + precio + "-" + sucursal);
 
