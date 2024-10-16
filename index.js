@@ -100,6 +100,7 @@ app.post("/updateListaPrecios", (req, res) => {
 
     /* req.body.forEach(element => { */
     req.body.map(element => {
+        console.log(element);
 
         const clave = element.clave;
         const precio = element.precio;
