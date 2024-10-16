@@ -97,13 +97,13 @@ app.put("/actualiza", (req, res) => {
     res.send(resultado);
 })
 
-app.post("/updateListaPrecios", (req, res) => {
+/* app.post("/updateListaPrecios", (req, res) => {
     const data = req.body;
     console.log('Received data:', data);
     res.status(200).json({ message: 'Data received successfully.' });
-});
+}); */
 
-/* app.post("/updateListaPrecios", (req, res) => {
+app.post("/updateListaPrecios", (req, res) => {
     console.log(req.body);
 
     req.body.map(element => {
@@ -128,7 +128,7 @@ app.post("/updateListaPrecios", (req, res) => {
     });
 
     return res.send("INSERTED");
-}) */
+})
 
 app.get("/getmargen", (req, res) => {
     const familia = req.query.familia;
