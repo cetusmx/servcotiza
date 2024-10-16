@@ -107,6 +107,7 @@ app.post("/updateListaPrecios", (req, res) => {
                 if(err)
                 {
                     return res.send(err)
+                    console.log(err)
                 }
             }
         );
