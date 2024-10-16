@@ -98,7 +98,8 @@ app.put("/actualiza", (req, res) => {
 app.post("/updateListaPrecios", (req, res) => {
     console.log(req.body);
 
-    req.body.forEach(element => {
+    /* req.body.forEach(element => { */
+    req.body.map(element => {
 
         const clave = element.clave;
         const precio = element.precio;
