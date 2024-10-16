@@ -96,7 +96,7 @@ app.put("/actualiza", (req, res) => {
 })
 
 app.post("/updateListaPrecios", (req, res) => {
-    /* console.log(req.body); */
+    console.log(req.body);
 
     req.body.forEach(element => {
 
