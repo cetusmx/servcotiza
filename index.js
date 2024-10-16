@@ -102,6 +102,8 @@ app.post("/updateListaPrecios", (req, res) => {
         const precio = element.precio;
         const sucursal = element.sucursal;
 
+        console.log(clave + "-" + precio + "-" + sucursal);
+
         db.query('INSERT INTO precios values(?,?,?)', [clave,precio,sucursal],
             (err, result) => {
                 if(err)
