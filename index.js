@@ -114,6 +114,48 @@ app.post("/updateListaPrecios", (req, res) => {
         const sucursal = element.Sucursal;
 
         console.log(clave + "-" + precio + "-" + sucursal);
+        db.query('UPDATE precios SET precio=? WHERE clave=? AND sucursal=?', [precio, clave, sucursal],
+        //db.query('INSERT INTO precios(clave,precio,sucursal) values(?,?,?)', [clave,precio,sucursal],
+            (err, result) => {
+                if(err)
+                {
+                    return res.send(err)
+                    console.log(err)
+                }
+            }
+        );
+        
+    });
+
+    return res.send("INSERTED");
+})
+
+app.get("/borrarLista", (req, res) => {
+    
+    const sucursal = req.query.sucursal;
+
+    db.query('DELETE FROM precios WHERE sucursal=?', [sucursal],
+        (err, result) => {
+            if(err)
+            {
+                return res.send(err)
+                console.log(err)
+            }
+        }
+    );
+})
+
+app.post("/insertarLista", (req, res) => {
+    console.log(req.body);
+
+    req.body.map(element => {
+        console.log(element);
+
+        const clave = element.Clave;
+        const precio = element.Precio;
+        const sucursal = element.Sucursal;
+
+        console.log(clave + "-" + precio + "-" + sucursal);
 
         db.query('INSERT INTO precios(clave,precio,sucursal) values(?,?,?)', [clave,precio,sucursal],
             (err, result) => {
