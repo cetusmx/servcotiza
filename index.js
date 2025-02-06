@@ -200,15 +200,15 @@ app.post("/insertarLista", (req, res) => {
 app.post("/insertarSiembra", (req, res) => {
     console.log(req.body);
 
-    req.body.map(element => {
-        console.log(element);
+    /* req.body.map(element => { */
+        /* console.log(element); */
 
-        const clave = element.clave;
-        const familia = element.familia;
-        const motivo = element.motivo;
-        const veces = element.veces;
-        const sucursal = element.sucursal;
-        const observaciones = element.observaciones;
+        const clave = req.body.clave;
+        const familia = req.body.familia;
+        const motivo = req.body.motivo;
+        const veces = req.body.veces;
+        const sucursal = req.body.sucursal;
+        const observaciones = req.body.observaciones;
 
         console.log(clave + "-" + familia + "-" + motivo + "-" + veces + "-" + sucursal + "-" + observaciones);
 
@@ -223,7 +223,7 @@ app.post("/insertarSiembra", (req, res) => {
             }
         );
         
-    });
+    /* } );*/
 
     return res.send("INSERTED");
 })
