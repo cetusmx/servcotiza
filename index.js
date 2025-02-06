@@ -130,6 +130,32 @@ app.post("/updateListaPrecios", (req, res) => {
     return res.send("INSERTED");
 })
 
+app.post("/updateMargenes", (req, res) => {
+    console.log(req.body);
+
+    req.body.map(element => {
+        console.log(element);
+
+        const margen = element.margen;
+        const familia = element.familia;
+        const sucursal = element.sucursal;
+
+        console.log(margen + "-" + familia + "-" + sucursal);
+        db.query('UPDATE margenes SET margen=? WHERE familia=? AND sucursal=?', [margen, familia, sucursal],
+            (err, result) => {
+                if(err)
+                {
+                    return res.send(err)
+                    console.log(err)
+                }
+            }
+        );
+        
+    });
+
+    return res.send("INSERTED");
+})
+
 app.get("/borrarLista", (req, res) => {
     
     const sucursal = req.query.sucursal;
@@ -143,6 +169,63 @@ app.get("/borrarLista", (req, res) => {
             }
         }
     );
+})
+
+app.post("/insertarLista", (req, res) => {
+    console.log(req.body);
+
+    req.body.map(element => {
+        console.log(element);
+
+        const clave = element.Clave;
+        const precio = element.Precio;
+        const sucursal = element.Sucursal;
+
+        console.log(clave + "-" + precio + "-" + sucursal);
+
+        db.query('INSERT INTO precios(clave,precio,sucursal) values(?,?,?)', [clave,precio,sucursal],
+            (err, result) => {
+                if(err)
+                {
+                    return res.send(err)
+                    console.log(err)
+                }
+            }
+        );
+        
+    });
+
+    return res.send("INSERTED");
+})
+app.post("/insertarSiembra", (req, res) => {
+    console.log(req.body);
+
+    req.body.map(element => {
+        console.log(element);
+
+        const clave = element.clave;
+        const familia = element.familia;
+        const motivo = element.motivo;
+        const veces = element.veces;
+        const sucursal = element.sucursal;
+        const observaciones = element.observaciones;
+
+        console.log(clave + "-" + familia + "-" + motivo + "-" + veces + "-" + sucursal + "-" + observaciones);
+
+        db.query('INSERT INTO siembraProds(clave,familia,motivo,veces,observaciones,sucursal) values(?,?,?,?,?,?)',
+             [clave,familia,motivo,veces,observaciones,sucursal],
+            (err, result) => {
+                if(err)
+                {
+                    return res.send(err)
+                    console.log(err)
+                }
+            }
+        );
+        
+    });
+
+    return res.send("INSERTED");
 })
 
 app.post("/insertarLista", (req, res) => {
