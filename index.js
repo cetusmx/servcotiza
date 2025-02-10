@@ -297,6 +297,19 @@ app.get("/margenes", (req, res) => {
     );
 })
 
+app.get("/getSolSiembra", (req, res) => {
+
+    db.query('SELECT * FROM siembraProds',
+        (err, result) => {
+            if (err) {
+                console.groupCollapsed(err);
+            } else {
+                res.send(result);
+            }
+        }
+    );
+})
+
 app.get("/getpreciosall", (req, res) => {
 
     db.query('SELECT clave, precio, sucursal FROM precios',
