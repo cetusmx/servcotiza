@@ -210,11 +210,13 @@ app.post("/insertarSiembra", (req, res) => {
         const sucursal = req.body.sucursal;
         const observaciones = req.body.observaciones;
         const maximo = req.body.maximo;
+        const estatus = "Abierta";
+        const autorizacion = "Pendiente";
 
         console.log(clave + "-" + familia + "-" + motivo + "-" + veces + "-" + sucursal + "-" + observaciones + "-" + maximo);
 
-        db.query('INSERT INTO siembraProds(clave,familia,motivo,veces,observaciones,sucursal,maximo) values(?,?,?,?,?,?,?)',
-             [clave,familia,motivo,veces,observaciones,sucursal,maximo],
+        db.query('INSERT INTO siembraProds(clave,familia,motivo,veces,observaciones,sucursal,maximo,estatus,autorizacion) values(?,?,?,?,?,?,?,?,?)',
+             [clave,familia,motivo,veces,observaciones,sucursal,maximo,estatus,autorizacion],
             (err, result) => {
                 if(err)
                 {
