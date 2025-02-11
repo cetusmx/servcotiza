@@ -202,7 +202,7 @@ app.post("/insertarSiembra", (req, res) => {
 
     /* req.body.map(element => { */
         /* console.log(element); */
-
+        const fecha = req.body.fecha;
         const clave = req.body.clave;
         const familia = req.body.familia;
         const motivo = req.body.motivo;
@@ -215,8 +215,8 @@ app.post("/insertarSiembra", (req, res) => {
 
         console.log(clave + "-" + familia + "-" + motivo + "-" + veces + "-" + sucursal + "-" + observaciones + "-" + maximo);
 
-        db.query('INSERT INTO siembraProds(clave,familia,motivo,veces,observaciones,sucursal,maximo,estatus,autorizacion) values(?,?,?,?,?,?,?,?,?)',
-             [clave,familia,motivo,veces,observaciones,sucursal,maximo,estatus,autorizacion],
+        db.query('INSERT INTO siembraProds(fecha,clave,familia,motivo,veces,observaciones,sucursal,maximo,estatus,autorizacion) values(?,?,?,?,?,?,?,?,?,?)',
+             [fecha,clave,familia,motivo,veces,observaciones,sucursal,maximo,estatus,autorizacion],
             (err, result) => {
                 if(err)
                 {
