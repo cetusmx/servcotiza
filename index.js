@@ -124,9 +124,7 @@ app.post("/updateListaPrecios", (req, res) => {
                 }
             }
         );
-        
     });
-
     return res.send("INSERTED");
 })
 
@@ -161,6 +159,21 @@ app.get("/borrarLista", (req, res) => {
     const sucursal = req.query.sucursal;
 
     db.query('DELETE FROM precios WHERE sucursal=?', [sucursal],
+        (err, result) => {
+            if(err)
+            {
+                return res.send(err)
+                console.log(err)
+            }
+        }
+    );
+})
+
+app.get("/borrarMargenes", (req, res) => {
+    
+    const sucursal = req.query.sucursal;
+
+    db.query('TRUNCATE TABLE margenes',
         (err, result) => {
             if(err)
             {
@@ -244,6 +257,33 @@ app.post("/insertarLista", (req, res) => {
         console.log(clave + "-" + precio + "-" + sucursal);
 
         db.query('INSERT INTO precios(clave,precio,sucursal) values(?,?,?)', [clave,precio,sucursal],
+            (err, result) => {
+                if(err)
+                {
+                    return res.send(err)
+                    console.log(err)
+                }
+            }
+        );
+        
+    });
+
+    return res.send("INSERTED");
+})
+
+app.post("/insertarMargenes", (req, res) => {
+    console.log(req.body);
+
+    req.body.map(element => {
+        console.log(element);
+
+        const familia = element.familia;
+        const margen = element.margen;
+        const sucursal = element.sucursal;
+
+        console.log(familia + "-" + margen + "-" + sucursal);
+
+        db.query('INSERT INTO margenes(familia,margen,sucursal) values(?,?,?)', [familia,margen,sucursal],
             (err, result) => {
                 if(err)
                 {
