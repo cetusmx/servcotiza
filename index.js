@@ -275,10 +275,13 @@ app.get("/getclaves", (req, res) => {
 
     console.log("Inside getclaves");
     //console.log(req.query);
-
-    req.query.map(element => {
+    const productos = req.query.productos;
+    const rfc = req.query.rfc;
+    console.log(productos);
+    console.log(rfc);
+    /* req.query.map(element => {
         console.log(element);
-    })
+    }) */
     
     /* db.query('SELECT * FROM margenes',
         (err, result) => {
