@@ -273,6 +273,7 @@ app.post("/insertarLista", (req, res) => {
 
 app.get("/getclaves", (req, res) => {
 
+    let listaCompleta = new Array;
     console.log("Inside getclaves");
     //console.log(req.query);
     const productos = req.query.productos;
@@ -290,13 +291,19 @@ app.get("/getclaves", (req, res) => {
                     console.groupCollapsed(err);
                 } else {
                     //res.send(result);
-                    console.log(result[0].clave);
+                    let partida = {
+                        cantidad: element.cantidad,
+                        producto: element.producto,
+                        clave: result[0].clave,
+                      };
+                    listaCompleta.push(partida)
                 }
             }
         );
 
     })
-    
+    console.log(listaCompleta);
+                    
     /* db.query('SELECT * FROM margenes',
         (err, result) => {
             if (err) {
