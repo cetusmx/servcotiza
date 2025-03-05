@@ -289,8 +289,8 @@ app.get("/getclaves", (req, res) => {
                 if (err) {
                     console.groupCollapsed(err);
                 } else {
-                    res.send(result);
-                    console.log(result);
+                    //res.send(result);
+                    console.log(result.data[0].margen);
                 }
             }
         );
