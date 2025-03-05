@@ -283,6 +283,18 @@ app.get("/getclaves", (req, res) => {
     productos.map(element => {
         console.log(element.cantidad);
         console.log(element.producto);
+
+        db.query('SELECT clave FROM clavesProveeedorView WHERE claveprovedor=? AND rfc=?', [element.producto, rfc],
+            (err, result) => {
+                if (err) {
+                    console.groupCollapsed(err);
+                } else {
+                    res.send(result);
+                    console.log(result);
+                }
+            }
+        );
+
     })
     
     /* db.query('SELECT * FROM margenes',
