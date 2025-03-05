@@ -271,6 +271,25 @@ app.post("/insertarLista", (req, res) => {
     return res.send("INSERTED");
 })
 
+app.get("/getclaves", (req, res) => {
+
+    console.log(req.body);
+
+    req.body.map(element => {
+        console.log(element);
+    })
+    
+    /* db.query('SELECT * FROM margenes',
+        (err, result) => {
+            if (err) {
+                console.groupCollapsed(err);
+            } else {
+                res.send(result);
+            }
+        }
+    ); */
+})
+
 app.post("/insertarMargenes", (req, res) => {
     console.log(req.body);
 
