@@ -273,6 +273,7 @@ app.post("/insertarLista", (req, res) => {
 
 app.get("/getclaves", (req, res) => {
 
+    console.log("Inside getclaves");
     console.log(req.body);
 
     /* req.body.map(element => {
