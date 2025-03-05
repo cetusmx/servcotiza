@@ -274,11 +274,11 @@ app.post("/insertarLista", (req, res) => {
 app.get("/getclaves", (req, res) => {
 
     console.log("Inside getclaves");
-    console.log(req.query);
+    //console.log(req.query);
 
-    /* req.body.map(element => {
+    req.query.map(element => {
         console.log(element);
-    }) */
+    })
     
     /* db.query('SELECT * FROM margenes',
         (err, result) => {
