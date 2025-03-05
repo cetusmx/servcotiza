@@ -275,9 +275,9 @@ app.get("/getclaves", (req, res) => {
 
     console.log(req.body);
 
-    req.body.map(element => {
+    /* req.body.map(element => {
         console.log(element);
-    })
+    }) */
     
     /* db.query('SELECT * FROM margenes',
         (err, result) => {
