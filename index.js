@@ -290,7 +290,7 @@ app.get("/getclaves", (req, res) => {
                     console.groupCollapsed(err);
                 } else {
                     //res.send(result);
-                    console.log(result.data[0].clave);
+                    console.log(result.clave);
                 }
             }
         );
