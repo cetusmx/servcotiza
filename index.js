@@ -277,12 +277,12 @@ app.get("/getclaves", (req, res) => {
                     console.groupCollapsed(err);
                 } else {
                     //res.send(result);
-                    let partida = {
+                    /* let partida = {
                         cantidad: element.cantidad,
                         producto: element.producto,
                         clave: result[0].clave,
-                      };
-                      return partida;
+                      }; */
+                      return {cantidad: element.cantidad,producto: element.producto,clave: result[0].clave};
                     //console.log(partida);
                 }
             }
