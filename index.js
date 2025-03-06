@@ -276,9 +276,9 @@ app.get("/getclaves", (req, res) => {
 
     /* const listaCompleta =  req.query.productos.map(element => { */
     for(i=0;i<req.query.productos.length;i++){
-        cantidad = element.cantidad;
-        producto = element.producto;
-        db.query('SELECT clave FROM clavesProveeedorView WHERE claveprovedor=? AND rfc=?', [element.producto, rfc],
+        /* cantidad = element.cantidad;
+        producto = element.producto; */
+        db.query('SELECT clave FROM clavesProveeedorView WHERE claveprovedor=? AND rfc=?', [req.query.productos[i].producto, rfc],
             (err, result) => {
                 if (err) {
                     console.groupCollapsed(err);
