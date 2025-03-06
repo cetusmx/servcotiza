@@ -278,11 +278,6 @@ app.get("/getclaves", (req, res) => {
     const rfc = req.query.rfc;
     
     productos.map(element => {
-        let partida = {
-            cantidad: string,
-            producto: element.producto,
-            clave: result[0].clave,
-          };
         db.query('SELECT clave FROM clavesProveeedorView WHERE claveprovedor=? AND rfc=?', [element.producto, rfc],
             (err, result) => {
                 if (err) {
