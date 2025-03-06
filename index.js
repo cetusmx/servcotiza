@@ -277,14 +277,14 @@ app.get("/getclaves", async (req, res) => {
     const listaCompleta = productos.map(element => {
         cantidad = element.cantidad;
         producto = element.producto;
-        db.query('SELECT clave FROM clavesProveeedorView WHERE claveprovedor=? AND rfc=?', [producto, rfc],
+        db.query('SELECT clave FROM clavesProveeedorView WHERE claveprovedor=? AND rfc=?', [element.producto, rfc],
             (err, result) => {
                 if (err) {
                     console.groupCollapsed(err);
                 } else {
                     let partida = {
-                        cantidad: cantidad,
-                        producto: producto,
+                        cantidad: element.cantidad,
+                        producto: element.producto,
                         clave: result[0].clave,
                     };
                     console.log(partida);
@@ -301,7 +301,7 @@ app.get("/getclaves", async (req, res) => {
     res.send(listaCompleta);
 })
 
-let creaPartida = (clave, cantidad, producto) => {
+/* let creaPartida = (clave, cantidad, producto) => {
     let partida = {
         cantidad: cantidad,
         producto: producto,
@@ -310,7 +310,7 @@ let creaPartida = (clave, cantidad, producto) => {
     console.log("Inside creaPartida");
     console.log(partida);
     return partida;
-}
+} */
 app.post("/insertarMargenes", (req, res) => {
     console.log(req.body);
 
