@@ -278,6 +278,11 @@ app.get("/getclaves", (req, res) => {
     const rfc = req.query.rfc;
     
     const listaCompleta = productos.map(element => {
+        let partida = {
+            cantidad: string,
+            producto: element.producto,
+            clave: result[0].clave,
+          };
         db.query('SELECT clave FROM clavesProveeedorView WHERE claveprovedor=? AND rfc=?', [element.producto, rfc],
             (err, result) => {
                 if (err) {
@@ -289,24 +294,17 @@ app.get("/getclaves", (req, res) => {
                         producto: element.producto,
                         clave: result[0].clave,
                       };
-                      return partida;
-                    //listaCompleta.push(partida);
-                    //console.log(partida);
+                      //return partida;
+                    listaCompleta.push(partida);
+                    console.log(partida);
                 }
             }
         );
+
     });
     console.log(listaCompleta);
                     
-    /* db.query('SELECT * FROM margenes',
-        (err, result) => {
-            if (err) {
-                console.groupCollapsed(err);
-            } else {
-                res.send(result);
-            }
-        }
-    ); */
+    res.send(listaCompleta);
 })
 
 app.post("/insertarMargenes", (req, res) => {
