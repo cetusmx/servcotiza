@@ -296,7 +296,7 @@ app.get("/getclaves", async (req, res) => {
     res.send(listaCompleta);
 })
 
-const creaPartida = (clave, cantidad, producto) => {
+let creaPartida = (clave, cantidad, producto) => {
     let partida = {
         cantidad: cantidad,
         producto: producto,
