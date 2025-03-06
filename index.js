@@ -273,11 +273,11 @@ app.post("/insertarLista", (req, res) => {
 
 app.get("/getclaves", (req, res) => {
 
-    const listaCompleta = [];
+    //const listaCompleta = [];
     const productos = req.query.productos;
     const rfc = req.query.rfc;
     
-    listaCompleta = productos.map(element => {
+    const listaCompleta = productos.map(element => {
         db.query('SELECT clave FROM clavesProveeedorView WHERE claveprovedor=? AND rfc=?', [element.producto, rfc],
             (err, result) => {
                 if (err) {
