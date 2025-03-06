@@ -275,7 +275,8 @@ app.get("/getclaves", (req, res) => {
     const rfc = req.query.rfc;
 
     /* const listaCompleta =  req.query.productos.map(element => { */
-    for(i=0;i<req.query.productos.length;i++){
+    for (i = 0; i < req.query.productos.length; i++) {
+        console.log(req.query.productos.length);
         /* cantidad = element.cantidad;
         producto = element.producto; */
         db.query('SELECT clave FROM clavesProveeedorView WHERE claveprovedor=? AND rfc=?', [req.query.productos[i].producto, rfc],
@@ -283,7 +284,7 @@ app.get("/getclaves", (req, res) => {
                 if (err) {
                     console.groupCollapsed(err);
                 } else {
-                    let temp = req.query.productos[i].producto;
+                    const temp = req.query.productos[i].producto;
                     req.query.productos[i].producto = temp + "|" + result[0].clave;
                     /* let partida = {
                         cantidad: element.cantidad,
@@ -302,7 +303,7 @@ app.get("/getclaves", (req, res) => {
     console.log(req.query.productos);
     //console.log(listaCompleta);
 
-    res.send(listaCompleta);
+    res.send(req.query);
 })
 
 /* let creaPartida = (clave, cantidad, producto) => {
