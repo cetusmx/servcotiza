@@ -273,7 +273,7 @@ app.post("/insertarLista", (req, res) => {
 
 app.get("/getclaves", (req, res) => {
 
-    let listaCompleta = [];
+    const listaCompleta = [];
     console.log("Inside getclaves");
     //console.log(req.query);
     const productos = req.query.productos;
