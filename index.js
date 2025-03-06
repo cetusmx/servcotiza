@@ -266,11 +266,11 @@ app.post("/insertarLista", (req, res) => {
 
 app.get("/getclaves", (req, res) => {
 
-    const listaCompleta = [];
+    //const listaCompleta = [];
     const productos = req.query.productos;
     const rfc = req.query.rfc;
 
-    /* productos.map(element => {
+    let listaCompleta = productos.map(element => {
         db.query('SELECT clave FROM clavesProveeedorView WHERE claveprovedor=? AND rfc=?', [element.producto, rfc],
             (err, result) => {
                 if (err) {
@@ -282,15 +282,13 @@ app.get("/getclaves", (req, res) => {
                         producto: element.producto,
                         clave: result[0].clave,
                       };
-                      //return partida;
-                    listaCompleta.push(partida);
-                    console.log(partida);
+                      return partida;
+                    //console.log(partida);
                 }
             }
         );
-
-    }); */
-    for (let i = 0; i < productos.length; i++) {
+    });
+    /* for (let i = 0; i < productos.length; i++) {
         db.query('SELECT clave FROM clavesProveeedorView WHERE claveprovedor=? AND rfc=?', [productos[i].producto, rfc],
             (err, result) => {
                 if (err) {
@@ -308,8 +306,7 @@ app.get("/getclaves", (req, res) => {
                 }
             }
         );
-
-    };
+    }; */
     console.log(listaCompleta);
 
     res.send(listaCompleta);
