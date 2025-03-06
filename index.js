@@ -268,7 +268,7 @@ app.get("/getclaves", (req, res) => {
 
     let cantidad;
     let producto;
-    let clave;
+    let clave = "";
 
     //const listaCompleta = [];
     const productos = req.query.productos;
@@ -283,7 +283,7 @@ app.get("/getclaves", (req, res) => {
                     console.groupCollapsed(err);
                 } else {
                     clave = result[0].clave;
-                    console.log(clave);
+                    //console.log(clave);
                 }
             }
         );
@@ -295,7 +295,7 @@ app.get("/getclaves", (req, res) => {
           };
           return partida;
     });
-    
+
     console.log(listaCompleta);
 
     res.send(listaCompleta);
