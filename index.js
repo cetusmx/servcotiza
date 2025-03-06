@@ -283,17 +283,12 @@ app.get("/getclaves", (req, res) => {
                     console.groupCollapsed(err);
                 } else {
                     clave = result[0].clave;
-                    //console.log(clave);
+                    return creaPartida(result[0].clave, cantidad, producto);//console.log(clave);
                 }
             }
         );
-        console.log(clave);
-        let partida = {
-            cantidad: cantidad,
-            producto: producto,
-            clave: clave,
-          };
-          return partida;
+        //console.log(clave);
+
     });
 
     console.log(listaCompleta);
@@ -301,6 +296,14 @@ app.get("/getclaves", (req, res) => {
     res.send(listaCompleta);
 })
 
+const creaPartida = (clave, cantidad, producto) => {
+    let partida = {
+        cantidad: cantidad,
+        producto: producto,
+        clave: clave,
+    };
+    return partida;
+}
 app.post("/insertarMargenes", (req, res) => {
     console.log(req.body);
 
