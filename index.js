@@ -283,13 +283,11 @@ app.get("/getclaves", (req, res) => {
                     console.groupCollapsed(err);
                 } else {
                     clave = result[0].clave;
-                    //res.send(result);
-                    /*  */
-                      //return {cantidad: element.cantidad, producto: element.producto, clave: result[0].clave};
-                    //console.log(partida);
+                    console.log(clave);
                 }
             }
         );
+        console.log(clave);
         let partida = {
             cantidad: cantidad,
             producto: producto,
@@ -297,25 +295,7 @@ app.get("/getclaves", (req, res) => {
           };
           return partida;
     });
-    /* for (let i = 0; i < productos.length; i++) {
-        db.query('SELECT clave FROM clavesProveeedorView WHERE claveprovedor=? AND rfc=?', [productos[i].producto, rfc],
-            (err, result) => {
-                if (err) {
-                    console.groupCollapsed(err);
-                } else {
-                    //res.send(result);
-                    let partida = {
-                        cantidad: productos[i].cantidad,
-                        producto: productos[i].producto,
-                        clave: result[0].clave,
-                    };
-                    //return partida;
-                    listaCompleta.push(partida);
-                    console.log(partida);
-                }
-            }
-        );
-    }; */
+    
     console.log(listaCompleta);
 
     res.send(listaCompleta);
