@@ -302,6 +302,7 @@ const creaPartida = (clave, cantidad, producto) => {
         producto: producto,
         clave: clave,
     };
+    console.log(partida);
     return partida;
 }
 app.post("/insertarMargenes", (req, res) => {
