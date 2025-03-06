@@ -274,17 +274,10 @@ app.post("/insertarLista", (req, res) => {
 app.get("/getclaves", (req, res) => {
 
     const listaCompleta = [];
-    console.log("Inside getclaves");
-    //console.log(req.query);
     const productos = req.query.productos;
     const rfc = req.query.rfc;
-    //console.log(productos);
-    //console.log(rfc);
-
+    
     productos.map(element => {
-        //console.log(element.cantidad);
-        //console.log(element.producto);
-
         db.query('SELECT clave FROM clavesProveeedorView WHERE claveprovedor=? AND rfc=?', [element.producto, rfc],
             (err, result) => {
                 if (err) {
@@ -301,8 +294,7 @@ app.get("/getclaves", (req, res) => {
                 }
             }
         );
-
-    })
+    });
     console.log(listaCompleta);
                     
     /* db.query('SELECT * FROM margenes',
