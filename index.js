@@ -266,27 +266,36 @@ app.post("/insertarLista", (req, res) => {
 
 app.get("/getclaves", (req, res) => {
 
+    let cantidad;
+    let producto;
+    let clave;
+
     //const listaCompleta = [];
     const productos = req.query.productos;
     const rfc = req.query.rfc;
 
     let listaCompleta = productos.map(element => {
+        cantidad = element.cantidad;
+        producto = element.producto;
         db.query('SELECT clave FROM clavesProveeedorView WHERE claveprovedor=? AND rfc=?', [element.producto, rfc],
             (err, result) => {
                 if (err) {
                     console.groupCollapsed(err);
                 } else {
+                    clave = result[0].clave;
                     //res.send(result);
-                    /* let partida = {
-                        cantidad: element.cantidad,
-                        producto: element.producto,
-                        clave: result[0].clave,
-                      }; */
-                      return {cantidad: element.cantidad,producto: element.producto,clave: result[0].clave};
+                    /*  */
+                      //return {cantidad: element.cantidad, producto: element.producto, clave: result[0].clave};
                     //console.log(partida);
                 }
             }
         );
+        let partida = {
+            cantidad: cantidad,
+            producto: producto,
+            clave: clave,
+          };
+          return partida;
     });
     /* for (let i = 0; i < productos.length; i++) {
         db.query('SELECT clave FROM clavesProveeedorView WHERE claveprovedor=? AND rfc=?', [productos[i].producto, rfc],
