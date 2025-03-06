@@ -264,7 +264,7 @@ app.post("/insertarLista", (req, res) => {
     return res.send("INSERTED");
 })
 
-app.get("/getclaves", async (req, res) => {
+app.get("/getclaves", (req, res) => {
 
     let cantidad;
     let producto;
@@ -274,11 +274,11 @@ app.get("/getclaves", async (req, res) => {
     const productos = req.query.productos;
     const rfc = req.query.rfc;
 
-    const listaCompleta = productos.map(element => {
+    const listaCompleta =  productos.map(element => {
         cantidad = element.cantidad;
         producto = element.producto;
         db.query('SELECT clave FROM clavesProveeedorView WHERE claveprovedor=? AND rfc=?', [element.producto, rfc],
-            (err, result) => {
+            async (err, result) => {
                 if (err) {
                     console.groupCollapsed(err);
                 } else {
