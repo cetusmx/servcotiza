@@ -265,6 +265,20 @@ app.post("/insertarLista", (req, res) => {
 })
 
 app.get("/getclaves", (req, res) => {
+    const rfc = req.query.rfc;
+    db.query('SELECT clave FROM clavesProveeedorView WHERE rfc=?', [rfc],
+        (err, result) => {
+            if (err) {
+                console.groupCollapsed(err);
+            } else {
+                res.send(result);
+                //console.log(result);
+            }
+        }
+    );
+})
+
+app.get("/getclavesPuntuales", (req, res) => {
 
     let cantidad;
     let producto;
