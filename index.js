@@ -279,11 +279,11 @@ app.get("/getclaves", (req, res) => {
     const productos = req.query.productos;
     const rfc = req.query.rfc;
     //console.log(productos);
-    console.log(rfc);
+    //console.log(rfc);
 
     productos.map(element => {
-        console.log(element.cantidad);
-        console.log(element.producto);
+        //console.log(element.cantidad);
+        //console.log(element.producto);
 
         db.query('SELECT clave FROM clavesProveeedorView WHERE claveprovedor=? AND rfc=?', [element.producto, rfc],
             (err, result) => {
@@ -297,7 +297,7 @@ app.get("/getclaves", (req, res) => {
                         clave: result[0].clave,
                       };
                     listaCompleta.push(partida)
-                    //console.log(partida);
+                    console.log(partida);
                 }
             }
         );
