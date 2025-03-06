@@ -297,13 +297,13 @@ app.get("/getclaves", (req, res) => {
                         clave: result[0].clave,
                       };
                     listaCompleta.push(partida)
-                    console.log(partida);
+                    //console.log(partida);
                 }
             }
         );
 
     })
-    //console.log(listaCompleta);
+    console.log(listaCompleta);
                     
     /* db.query('SELECT * FROM margenes',
         (err, result) => {
