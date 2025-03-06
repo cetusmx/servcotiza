@@ -283,6 +283,7 @@ app.get("/getclaves", (req, res) => {
                 if (err) {
                     console.groupCollapsed(err);
                 } else {
+                    console.log(req.query.productos[i].producto);
                     let temp = req.query.productos[i].producto;
                     req.query.productos[i].producto = temp + "|" + result[0].clave.toString();
                     /* let partida = {
