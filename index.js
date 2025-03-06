@@ -289,6 +289,7 @@ app.get("/getclaves", (req, res) => {
                         producto: element.producto,
                         clave: result[0].clave,
                       };
+                      return partida;
                     //listaCompleta.push(partida);
                     //console.log(partida);
                 }
