@@ -115,10 +115,9 @@ app.post("/updateListaPrecios", (req, res) => {
 
         console.log(clave + "-" + precio + "-" + sucursal);
         db.query('UPDATE precios SET precio=? WHERE clave=? AND sucursal=?', [precio, clave, sucursal],
-        //db.query('INSERT INTO precios(clave,precio,sucursal) values(?,?,?)', [clave,precio,sucursal],
+            //db.query('INSERT INTO precios(clave,precio,sucursal) values(?,?,?)', [clave,precio,sucursal],
             (err, result) => {
-                if(err)
-                {
+                if (err) {
                     return res.send(err)
                     console.log(err)
                 }
@@ -141,27 +140,25 @@ app.post("/updateMargenes", (req, res) => {
         console.log(margen + "-" + familia + "-" + sucursal);
         db.query('UPDATE margenes SET margen=? WHERE familia=? AND sucursal=?', [margen, familia, sucursal],
             (err, result) => {
-                if(err)
-                {
+                if (err) {
                     return res.send(err)
                     console.log(err)
                 }
             }
         );
-        
+
     });
 
     return res.send("INSERTED");
 })
 
 app.get("/borrarLista", (req, res) => {
-    
+
     const sucursal = req.query.sucursal;
 
     db.query('DELETE FROM precios WHERE sucursal=?', [sucursal],
         (err, result) => {
-            if(err)
-            {
+            if (err) {
                 return res.send(err)
                 console.log(err)
             }
@@ -170,13 +167,12 @@ app.get("/borrarLista", (req, res) => {
 })
 
 app.get("/borrarMargenes", (req, res) => {
-    
+
     const sucursal = req.query.sucursal;
 
     db.query('TRUNCATE TABLE margenes',
         (err, result) => {
-            if(err)
-            {
+            if (err) {
                 return res.send(err)
                 console.log(err)
             }
@@ -196,16 +192,15 @@ app.post("/insertarLista", (req, res) => {
 
         console.log(clave + "-" + precio + "-" + sucursal);
 
-        db.query('INSERT INTO precios(clave,precio,sucursal) values(?,?,?)', [clave,precio,sucursal],
+        db.query('INSERT INTO precios(clave,precio,sucursal) values(?,?,?)', [clave, precio, sucursal],
             (err, result) => {
-                if(err)
-                {
+                if (err) {
                     return res.send(err)
                     console.log(err)
                 }
             }
         );
-        
+
     });
 
     return res.send("INSERTED");
@@ -214,31 +209,30 @@ app.post("/insertarSiembra", (req, res) => {
     console.log(req.body);
 
     /* req.body.map(element => { */
-        /* console.log(element); */
-        const fecha = req.body.fecha;
-        const clave = req.body.clave;
-        const familia = req.body.familia;
-        const motivo = req.body.motivo;
-        const veces = req.body.veces;
-        const sucursal = req.body.sucursal;
-        const observaciones = req.body.observaciones;
-        const maximo = req.body.maximo;
-        const estatus = "Abierta";
-        const autorizacion = "Pendiente";
+    /* console.log(element); */
+    const fecha = req.body.fecha;
+    const clave = req.body.clave;
+    const familia = req.body.familia;
+    const motivo = req.body.motivo;
+    const veces = req.body.veces;
+    const sucursal = req.body.sucursal;
+    const observaciones = req.body.observaciones;
+    const maximo = req.body.maximo;
+    const estatus = "Abierta";
+    const autorizacion = "Pendiente";
 
-        console.log(clave + "-" + familia + "-" + motivo + "-" + veces + "-" + sucursal + "-" + observaciones + "-" + maximo);
+    console.log(clave + "-" + familia + "-" + motivo + "-" + veces + "-" + sucursal + "-" + observaciones + "-" + maximo);
 
-        db.query('INSERT INTO siembraProds(fecha,clave,familia,motivo,veces,observaciones,sucursal,maximo,estatus,autorizacion) values(?,?,?,?,?,?,?,?,?,?)',
-             [fecha,clave,familia,motivo,veces,observaciones,sucursal,maximo,estatus,autorizacion],
-            (err, result) => {
-                if(err)
-                {
-                    return res.send(err)
-                    console.log(err)
-                }
+    db.query('INSERT INTO siembraProds(fecha,clave,familia,motivo,veces,observaciones,sucursal,maximo,estatus,autorizacion) values(?,?,?,?,?,?,?,?,?,?)',
+        [fecha, clave, familia, motivo, veces, observaciones, sucursal, maximo, estatus, autorizacion],
+        (err, result) => {
+            if (err) {
+                return res.send(err)
+                console.log(err)
             }
-        );
-        
+        }
+    );
+
     /* } );*/
 
     return res.send("INSERTED");
@@ -256,16 +250,15 @@ app.post("/insertarLista", (req, res) => {
 
         console.log(clave + "-" + precio + "-" + sucursal);
 
-        db.query('INSERT INTO precios(clave,precio,sucursal) values(?,?,?)', [clave,precio,sucursal],
+        db.query('INSERT INTO precios(clave,precio,sucursal) values(?,?,?)', [clave, precio, sucursal],
             (err, result) => {
-                if(err)
-                {
+                if (err) {
                     return res.send(err)
                     console.log(err)
                 }
             }
         );
-        
+
     });
 
     return res.send("INSERTED");
@@ -276,8 +269,8 @@ app.get("/getclaves", (req, res) => {
     const listaCompleta = [];
     const productos = req.query.productos;
     const rfc = req.query.rfc;
-    
-    productos.map(element => {
+
+    /* productos.map(element => {
         db.query('SELECT clave FROM clavesProveeedorView WHERE claveprovedor=? AND rfc=?', [element.producto, rfc],
             (err, result) => {
                 if (err) {
@@ -296,9 +289,29 @@ app.get("/getclaves", (req, res) => {
             }
         );
 
-    });
+    }); */
+    for (let i = 0; i < productos.length; i++) {
+        db.query('SELECT clave FROM clavesProveeedorView WHERE claveprovedor=? AND rfc=?', [productos[i].producto, rfc],
+            (err, result) => {
+                if (err) {
+                    console.groupCollapsed(err);
+                } else {
+                    //res.send(result);
+                    let partida = {
+                        cantidad: productos[i].cantidad,
+                        producto: productos[i].producto,
+                        clave: result[0].clave,
+                    };
+                    //return partida;
+                    listaCompleta.push(partida);
+                    console.log(partida);
+                }
+            }
+        );
+
+    };
     console.log(listaCompleta);
-                    
+
     res.send(listaCompleta);
 })
 
@@ -314,16 +327,15 @@ app.post("/insertarMargenes", (req, res) => {
 
         console.log(familia + "-" + margen + "-" + sucursal);
 
-        db.query('INSERT INTO margenes(familia,margen,sucursal) values(?,?,?)', [familia,margen,sucursal],
+        db.query('INSERT INTO margenes(familia,margen,sucursal) values(?,?,?)', [familia, margen, sucursal],
             (err, result) => {
-                if(err)
-                {
+                if (err) {
                     return res.send(err)
                     console.log(err)
                 }
             }
         );
-        
+
     });
 
     return res.send("INSERTED");
