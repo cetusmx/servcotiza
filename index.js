@@ -273,11 +273,11 @@ app.post("/insertarLista", (req, res) => {
 
 app.get("/getclaves", (req, res) => {
 
-    //const listaCompleta = [];
+    const listaCompleta = [];
     const productos = req.query.productos;
     const rfc = req.query.rfc;
     
-    const listaCompleta = productos.map(element => {
+    productos.map(element => {
         let partida = {
             cantidad: string,
             producto: element.producto,
