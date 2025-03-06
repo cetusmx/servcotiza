@@ -274,7 +274,7 @@ app.get("/getclaves", async (req, res) => {
     const productos = req.query.productos;
     const rfc = req.query.rfc;
 
-    let listaCompleta = await productos.map(element => {
+    const listaCompleta = productos.map(element => {
         cantidad = element.cantidad;
         producto = element.producto;
         db.query('SELECT clave FROM clavesProveeedorView WHERE claveprovedor=? AND rfc=?', [element.producto, rfc],
@@ -283,7 +283,7 @@ app.get("/getclaves", async (req, res) => {
                     console.groupCollapsed(err);
                 } else {
                     clave = result[0].clave;
-                    return  creaPartida(result[0].clave, cantidad, producto);//console.log(clave);
+                    return creaPartida(result[0].clave, cantidad, producto);//console.log(clave);
                 }
             }
         );
@@ -302,6 +302,7 @@ const creaPartida = (clave, cantidad, producto) => {
         producto: producto,
         clave: clave,
     };
+    console.log("Inside creaPartida");
     console.log(partida);
     return partida;
 }
