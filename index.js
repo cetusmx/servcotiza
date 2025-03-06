@@ -282,8 +282,13 @@ app.get("/getclaves", async (req, res) => {
                 if (err) {
                     console.groupCollapsed(err);
                 } else {
-                    clave = result[0].clave;
-                    return creaPartida(result[0].clave, cantidad, producto);//console.log(clave);
+                    let partida = {
+                        cantidad: cantidad,
+                        producto: producto,
+                        clave: result[0].clave,
+                    };
+                    console.log(partida);
+                    return partida;
                 }
             }
         );
