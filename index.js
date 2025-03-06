@@ -274,11 +274,11 @@ app.get("/getclaves", (req, res) => {
     const productos = req.query.productos;
     const rfc = req.query.rfc;
 
-    const listaCompleta =  productos.map(element => {
+    const listaCompleta =  req.query.productos.map(element => {
         cantidad = element.cantidad;
         producto = element.producto;
         db.query('SELECT clave FROM clavesProveeedorView WHERE claveprovedor=? AND rfc=?', [element.producto, rfc],
-            async (err, result) => {
+            (err, result) => {
                 if (err) {
                     console.groupCollapsed(err);
                 } else {
