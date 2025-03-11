@@ -212,12 +212,12 @@ app.post("/insertarSiembra", (req, res) => {
     /* console.log(element); */
     const fecha = req.body.fecha;
     const clave = req.body.clave;
-    const familia = req.body.familia;
-    const motivo = req.body.motivo;
-    const veces = req.body.veces;
+    const familia = "";
+    const motivo = "";
+    const veces = "";
     const sucursal = req.body.sucursal;
     const observaciones = req.body.observaciones;
-    const maximo = req.body.maximo;
+    const maximo = "";
     const estatus = "Abierta";
     const autorizacion = "Pendiente";
 
