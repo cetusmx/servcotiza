@@ -340,7 +340,7 @@ app.post("/insertarMargenes", (req, res) => {
         const margen = element.margen;
         const sucursal = element.sucursal;
 
-        console.log(familia + "-" + margen + "-" + sucursal);
+        
 
         db.query('INSERT INTO margenes(familia,margen,sucursal) values(?,?,?)', [familia, margen, sucursal],
             (err, result) => {
@@ -352,7 +352,7 @@ app.post("/insertarMargenes", (req, res) => {
         );
 
     });
-
+    console.log("Insertado correctamente");
     return res.send("INSERTED");
 })
 
