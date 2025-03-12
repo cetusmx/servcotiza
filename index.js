@@ -331,6 +331,18 @@ app.get("/getclavesPuntuales", (req, res) => {
     return partida;
 } */
 app.post("/insertarMargenes", (req, res) => {
+
+    const sucursal = req.query.sucursal;
+
+    db.query('TRUNCATE TABLE margenes',
+        (err, result) => {
+            if (err) {
+                return res.send(err)
+                console.log(err)
+            }
+        }
+    );
+
     console.log(req.body);
 
     req.body.map(element => {
