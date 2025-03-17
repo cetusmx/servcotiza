@@ -15,6 +15,27 @@ const db = mysql.createConnection({
     database: "sealmark_cotizador"
 });
 
+app.put("/insertClaveManualNoRegistrada", (req, res) => {
+
+    const clave = req.body.clave;
+    const sucursal = req.body.sucursal;
+    const rfc = req.body.proveedor;
+    const factura = req.body.factura;
+    const claveProveedor = req.body.claveProveedor;
+    const fecha = req.body.fecha;
+    const estatus = "Pendiente";
+
+    db.query('INSERT INTO clavesnoregistradas(clave,sucursal,rfc,factura,claveproveedor,estatus,fecha) values(?,?,?,?,?,?,?)', 
+        [clave, sucursal,rfc,factura,claveProveedor,estatus,fecha],
+        (err, result) => {
+            if (err) {
+                console.log(err)
+                return res.send(err)
+            }
+        }
+    );
+    return res.send("INSERTED");
+})
 
 app.put("/actualiza", (req, res) => {
 
@@ -352,7 +373,7 @@ app.post("/insertarMargenes", (req, res) => {
         const margen = element.margen;
         const sucursal = element.sucursal;
 
-        
+
 
         db.query('INSERT INTO margenes(familia,margen,sucursal) values(?,?,?)', [familia, margen, sucursal],
             (err, result) => {
