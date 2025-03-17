@@ -24,8 +24,9 @@ app.put("/insertClaveManualNoRegistrada", (req, res) => {
     const claveProveedor = req.body.claveProveedor;
     const fecha = req.body.fecha;
     const estatus = "Pendiente";
+    const dummy = "";
 
-    db.query('INSERT INTO clavesnoregistradas(clave,sucursal,rfc,factura,claveproveedor,estatus,fecha) values(?,?,?,?,?,?,?)', 
+    db.query('INSERT INTO clavesnoregistradas(clave,sucursal,rfc,factura,claveProveedor,estatus,fecha) values(?,?,?,?,?,?,?)', 
         [clave, sucursal,rfc,factura,claveProveedor,estatus,fecha],
         (err, result) => {
             if (err) {
@@ -35,7 +36,7 @@ app.put("/insertClaveManualNoRegistrada", (req, res) => {
         }
     );
     return res.send("INSERTED");
-})
+});
 
 app.put("/actualiza", (req, res) => {
 
