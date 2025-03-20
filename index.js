@@ -300,6 +300,21 @@ app.get("/getclaves", (req, res) => {
     );
 })
 
+app.get("/getclavesnoreg", (req, res) => {
+    const rfc = req.query.rfc;
+    db.query('SELECT clave, sucursal, factura, claveProveedor, fecha, nombre FROM clavesnoregistradasview ORDER BY fecha',
+        (err, result) => {
+            if (err) {
+                console.groupCollapsed(err);
+            } else {
+                res.send(result);
+                //console.log(result);
+            }
+        }
+    );
+    return res.send("Completado");
+})
+
 app.get("/getclavesPuntuales", (req, res) => {
 
     let cantidad;
