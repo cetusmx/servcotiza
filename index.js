@@ -312,7 +312,7 @@ app.get("/getclavesnoreg", (req, res) => {
             }
         }
     );
-    return res.send("Completado");
+    //return res.send("Completado");
 })
 
 app.get("/getclavesPuntuales", (req, res) => {
