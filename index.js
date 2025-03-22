@@ -239,7 +239,7 @@ app.post("/insertarSiembra", (req, res) => {
     const veces = "";
     const sucursal = req.body.sucursal;
     const observaciones = req.body.observaciones;
-    const maximo = "";
+    const maximo = req.body.qty;
     const estatus = "Abierta";
     const autorizacion = "Pendiente";
 
