@@ -448,7 +448,7 @@ app.get("/margenes", (req, res) => {
 
 app.get("/getSolSiembra", (req, res) => {
 
-    db.query('SELECT * FROM siembraProds',
+    db.query('SELECT cantidad, clave, observaciones, sucursal, fecha FROM faltantesview ORDER BY fecha',
         (err, result) => {
             if (err) {
                 console.groupCollapsed(err);
