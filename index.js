@@ -202,7 +202,7 @@ app.get("/borrarMargenes", (req, res) => {
     );
 })
 
-app.post("/insertarLista", (req, res) => {
+/* app.post("/insertarLista", (req, res) => {
     console.log(req.body);
 
     req.body.map(element => {
@@ -226,7 +226,8 @@ app.post("/insertarLista", (req, res) => {
     });
 
     return res.send("INSERTED");
-})
+}) */
+
 app.post("/insertarSiembra", (req, res) => {
     console.log(req.body);
 
@@ -261,7 +262,19 @@ app.post("/insertarSiembra", (req, res) => {
 })
 
 app.post("/insertarLista", (req, res) => {
-    console.log(req.body);
+
+    const sucu = req.query.sucursal;
+
+    db.query('DELETE FROM precios WHERE sucursal=?', [sucu],
+        (err, result) => {
+            if (err) {
+                return res.send(err)
+                console.log(err)
+            }
+        }
+    );
+
+    //console.log(req.body);
 
     req.body.map(element => {
         console.log(element);
