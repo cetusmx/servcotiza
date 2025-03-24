@@ -186,7 +186,7 @@ app.get("/borrarLista", (req, res) => {
             }
         }
     );
-    return res;
+    return res.send("BORRADA");
 })
 
 app.get("/borrarMargenes", (req, res) => {
