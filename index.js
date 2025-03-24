@@ -174,7 +174,7 @@ app.post("/updateMargenes", (req, res) => {
     return res.send("INSERTED");
 })
 
-app.get("/borrarLista", (req, res) => {
+app.post("/borrarLista", (req, res) => {
 
     const sucursal = req.query.sucursal;
 
