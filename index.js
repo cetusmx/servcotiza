@@ -186,6 +186,7 @@ app.get("/borrarLista", (req, res) => {
             }
         }
     );
+    return res;
 })
 
 app.get("/borrarMargenes", (req, res) => {
@@ -293,7 +294,7 @@ app.post("/insertarLista", (req, res) => {
 
     });
 
-    //return res.send("INSERTED");
+    return res.send("INSERTED");
 })
 
 app.get("/getclaves", (req, res) => {
