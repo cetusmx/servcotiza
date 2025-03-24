@@ -206,8 +206,6 @@ app.get("/borrarMargenes", (req, res) => {
 app.post("/insertarSiembra", (req, res) => {
     console.log(req.body);
 
-    /* req.body.map(element => { */
-    /* console.log(element); */
     const fecha = req.body.fecha;
     const clave = req.body.clave;
     const familia = "";
@@ -230,13 +228,10 @@ app.post("/insertarSiembra", (req, res) => {
             }
         }
     );
-
-    /* } );*/
-
     return res.send("INSERTED");
 })
 
-app.post("/insertarLista", (req, res) => {
+app.post("/insertarLista", async (req, res) => {
 
     /* const sucu = req.query.sucursal;
 
@@ -249,7 +244,7 @@ app.post("/insertarLista", (req, res) => {
         }
     ); */
 
-    req.body.map(element => {
+    await req.body.map(element => {
         
         const clave = element.clave;
         const precio = element.precio;
@@ -306,34 +301,19 @@ app.get("/getclavesPuntuales", (req, res) => {
     let producto;
     let clave = "";
 
-    //const listaCompleta = [];
     const productos = req.query.productos;
     const rfc = req.query.rfc;
 
-    /* const listaCompleta =  req.query.productos.map(element => { */
     for (i = 0; i < req.query.productos.length; i++) {
-        /* cantidad = element.cantidad;
-        producto = element.producto; */
         db.query('SELECT clave FROM clavesProveeedorView WHERE claveprovedor=? AND rfc=?', [req.query.productos[i].producto, rfc],
             (err, result) => {
                 if (err) {
                     console.groupCollapsed(err);
                 } else {
                     console.log(req.query.productos[i].producto);
-                    //let temp = req.query.productos[i].producto;
-                    //req.query.productos[i].producto = temp + "|" + result[0].clave.toString();
-                    /* let partida = {
-                        cantidad: element.cantidad,
-                        producto: element.producto,
-                        clave: result[0].clave,
-                    };
-                    console.log(partida);
-                    return partida; */
                 }
             }
         );
-        //console.log(clave);
-
     };
 
     console.log(req.query.productos);
@@ -342,16 +322,6 @@ app.get("/getclavesPuntuales", (req, res) => {
     res.send(req.query);
 })
 
-/* let creaPartida = (clave, cantidad, producto) => {
-    let partida = {
-        cantidad: cantidad,
-        producto: producto,
-        clave: clave,
-    };
-    console.log("Inside creaPartida");
-    console.log(partida);
-    return partida;
-} */
 app.post("/insertarMargenes", (req, res) => {
 
     const sucursal = req.query.sucursal;
