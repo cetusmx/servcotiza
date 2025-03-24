@@ -238,7 +238,7 @@ app.post("/insertarSiembra", (req, res) => {
 
 app.post("/insertarLista", (req, res) => {
 
-    /* const sucu = req.query.sucursal;
+    const sucu = req.query.sucursal;
 
     db.query('DELETE FROM precios WHERE sucursal=?', [sucu],
         (err, result) => {
@@ -247,7 +247,7 @@ app.post("/insertarLista", (req, res) => {
                 console.log(err)
             }
         }
-    ); */
+    );
 
     req.body.map(element => {
         
