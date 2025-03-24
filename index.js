@@ -277,11 +277,11 @@ app.post("/insertarLista", (req, res) => {
     //console.log(req.body);
 
     req.body.map(element => {
-        console.log(element);
+        //console.log(element);
 
-        const clave = element.Clave;
-        const precio = element.Precio;
-        const sucursal = element.Sucursal;
+        const clave = element.clave;
+        const precio = element.precio;
+        const sucursal = element.sucursal;
 
         console.log(clave + "-" + precio + "-" + sucursal);
 
