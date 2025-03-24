@@ -265,14 +265,14 @@ app.post("/insertarLista", (req, res) => {
 
     const sucu = req.query.sucursal;
 
-    db.query('DELETE FROM precios WHERE sucursal=?', [sucu],
+    /* db.query('DELETE FROM precios WHERE sucursal=?', [sucu],
         (err, result) => {
             if (err) {
                 return res.send(err)
                 console.log(err)
             }
         }
-    );
+    ); */
 
     //console.log(req.body);
 
@@ -296,7 +296,7 @@ app.post("/insertarLista", (req, res) => {
 
     });
 
-    return res.send("INSERTED");
+    //return res.send("INSERTED");
 })
 
 app.get("/getclaves", (req, res) => {
