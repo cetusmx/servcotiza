@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const mysql = require("mysql2");
+const mysql = require("mysql");
 const cors = require("cors");
 //import { insertarLista } from "./database.js";
 var bodyParser = require('body-parser');
@@ -258,13 +258,26 @@ app.post("/insertarLista", async (req, res) => {
     return res.send("INSERTED");
 })
 
-/* app.post("/insertarLista", async (req, res) => {
+    /* const sucu = req.query.sucursal;
+
+    db.query('DELETE FROM precios WHERE sucursal=?', [sucu],
+        (err, result) => {
+            if (err) {
+                return res.send(err)
+                console.log(err)
+            }
+        }
+    ); */
+    //console.log(req.body)
 
     const valuesArray = [];
+    //const keysArray = [];
     for (let i = 0; i < req.body.length; i++) {
+        //let currKey = Object.keys(arrOfObj[i]);
         let currValue = Object.values(req.body[i]);
+        //keysArray.push(currKey);
         valuesArray.push(currValue);
-    } */
+    } 
 /* await req.body.map(element => {
     
     const clave = element.clave;
