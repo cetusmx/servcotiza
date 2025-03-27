@@ -243,13 +243,13 @@ app.post("/insertarLista", async (req, res) => {
             }
         }
     ); */
-    console.log(req.body)
+    //console.log(req.body)
 
     const valuesArray = [];
     //const keysArray = [];
     for (let i = 0; i < req.body.length; i++) {
         //let currKey = Object.keys(arrOfObj[i]);
-        let currValue = Object.values(arrOfObj[i]);
+        let currValue = Object.values(req.body[i]);
         //keysArray.push(currKey);
         valuesArray.push(currValue);
     }
