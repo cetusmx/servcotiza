@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const mysql = require("mysql2");
 const cors = require("cors");
-import { insertarLista } from "./database.js";
+//import { insertarLista } from "./database.js";
 var bodyParser = require('body-parser');
 
 app.use(cors());
@@ -27,8 +27,8 @@ app.put("/insertClaveManualNoRegistrada", (req, res) => {
     const estatus = "Pendiente";
     const dummy = "";
 
-    db.query('INSERT INTO clavesnoregistradas(clave,sucursal,rfc,factura,claveProveedor,estatus,fecha) values(?,?,?,?,?,?,?)', 
-        [clave, sucursal,rfc,factura,claveProveedor,estatus,fecha],
+    db.query('INSERT INTO clavesnoregistradas(clave,sucursal,rfc,factura,claveProveedor,estatus,fecha) values(?,?,?,?,?,?,?)',
+        [clave, sucursal, rfc, factura, claveProveedor, estatus, fecha],
         (err, result) => {
             if (err) {
                 console.log(err)
@@ -232,9 +232,21 @@ app.post("/insertarSiembra", (req, res) => {
     return res.send("INSERTED");
 })
 
-App.post("/insertarLista", async (req, res) => {
-    const rows = await insertarLista(req.body)
-    res.status(201).send(rows)
+app.post("/insertarLista", async (req, res) => {
+
+    const valuesArray = [];
+    for (let i = 0; i < req.body.length; i++) {
+        let currValue = Object.values(req.body[i]);
+        valuesArray.push(currValue);
+    }
+
+    let sql = "INSERT INTO precios (clave, precio, sucursal) VALUES ?"
+
+    const [result] = await pool.query(sql, [valuesArray])
+    const written = result.affectedRows
+
+    //const rows = await insertarLista(req.body)
+    res.status(200).send(written)
 })
 
 /* app.post("/insertarLista", async (req, res) => {
@@ -244,26 +256,26 @@ App.post("/insertarLista", async (req, res) => {
         let currValue = Object.values(req.body[i]);
         valuesArray.push(currValue);
     } */
-    /* await req.body.map(element => {
-        
-        const clave = element.clave;
-        const precio = element.precio;
-        const sucursal = element.sucursal;
+/* await req.body.map(element => {
+    
+    const clave = element.clave;
+    const precio = element.precio;
+    const sucursal = element.sucursal;
 
-        console.log(clave + "-" + precio + "-" + sucursal);
+    console.log(clave + "-" + precio + "-" + sucursal);
 
-        db.query('INSERT INTO precios(clave,precio,sucursal) values(?,?,?)', [clave, precio, sucursal],
-            (err, result) => {
-                if (err) {
-                    return res.send(err)
-                    console.log(err)
-                }
+    db.query('INSERT INTO precios(clave,precio,sucursal) values(?,?,?)', [clave, precio, sucursal],
+        (err, result) => {
+            if (err) {
+                return res.send(err)
+                console.log(err)
             }
-        );
+        }
+    );
 
-    }); */
+}); */
 
-    /* return res.send("INSERTED");
+/* return res.send("INSERTED");
 }) */
 
 app.get("/getclaves", (req, res) => {
