@@ -245,16 +245,16 @@ app.post("/insertarLista", async (req, res) => {
     ); */
     console.log(req.body)
 
-    /* const valuesArray = [];
-    const keysArray = [];
+    const valuesArray = [];
+    //const keysArray = [];
     for (let i = 0; i < req.body.length; i++) {
-        let currKey = Object.keys(arrOfObj[i]);
+        //let currKey = Object.keys(arrOfObj[i]);
         let currValue = Object.values(arrOfObj[i]);
-        keysArray.push(currKey);
+        //keysArray.push(currKey);
         valuesArray.push(currValue);
     }
-    console.log("Keys Array: ", keysArray);
-    console.log("Values Array: ", valuesArray); */
+    //console.log("Keys Array: ", keysArray);
+    console.log("Values Array: ", valuesArray);
 
     /* await req.body.map(element => {
         
