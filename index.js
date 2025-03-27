@@ -7,7 +7,7 @@ var bodyParser = require('body-parser');
 
 app.use(cors());
 /* app.use(express.json()); */
-app.use(bodyParser.json({ limit: '20mb' }));
+/* app.use(bodyParser.json({ limit: '20mb' })); */
 
 const db = mysql.createConnection({
     host: "sealmarket.mx",
@@ -246,14 +246,16 @@ app.post("/insertarLista", async (req, res) => {
         let currValue = Object.values(req.body[i]);
         valuesArray.push(currValue);
     }
-
+    console.log(valuesArray)
+    
     let sql = "INSERT INTO precios (clave, precio, sucursal) VALUES ?"
 
-    const [result] = await pool.query(sql, [valuesArray])
-    const written = result.affectedRows
+    //const [result] = await pool.query(sql, [valuesArray])
+    //const written = result.affectedRows
 
     //const rows = await insertarLista(req.body)
-    res.status(200).send(written)
+    //res.status(200).send(written)
+    return res.send("INSERTED");
 })
 
 /* app.post("/insertarLista", async (req, res) => {
