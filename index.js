@@ -16,12 +16,12 @@ const db = mysql.createConnection({
     database: "sealmark_cotizador"
 });
 
-const pool = mysql.createPool({
+/* const pool = mysql.createPool({
     host: "sealmarket.mx",
     user: "sealmark_cotizauser",
     password: "Trof#4102",
     database: "sealmark_cotizador"
-}).promise();
+}).promise(); */
 
 app.put("/insertClaveManualNoRegistrada", (req, res) => {
 
@@ -247,7 +247,7 @@ app.post("/insertarLista", async (req, res) => {
         valuesArray.push(currValue);
     }
     console.log(valuesArray)
-    
+
     let sql = "INSERT INTO precios (clave, precio, sucursal) VALUES ?"
 
     //const [result] = await pool.query(sql, [valuesArray])
