@@ -243,8 +243,20 @@ app.post("/insertarLista", async (req, res) => {
             }
         }
     ); */
+    console.log(req.body)
 
-    await req.body.map(element => {
+    /* const valuesArray = [];
+    const keysArray = [];
+    for (let i = 0; i < req.body.length; i++) {
+        let currKey = Object.keys(arrOfObj[i]);
+        let currValue = Object.values(arrOfObj[i]);
+        keysArray.push(currKey);
+        valuesArray.push(currValue);
+    }
+    console.log("Keys Array: ", keysArray);
+    console.log("Values Array: ", valuesArray); */
+
+    /* await req.body.map(element => {
         
         const clave = element.clave;
         const precio = element.precio;
@@ -263,7 +275,7 @@ app.post("/insertarLista", async (req, res) => {
 
     });
 
-    return res.send("INSERTED");
+    return res.send("INSERTED"); */
 })
 
 app.get("/getclaves", (req, res) => {
