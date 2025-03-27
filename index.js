@@ -16,6 +16,13 @@ const db = mysql.createConnection({
     database: "sealmark_cotizador"
 });
 
+const pool = mysql.createPool({
+    host: "sealmarket.mx",
+    user: "sealmark_cotizauser",
+    password: "Trof#4102",
+    database: "sealmark_cotizador"
+}).promise();
+
 app.put("/insertClaveManualNoRegistrada", (req, res) => {
 
     const clave = req.body.clave;
