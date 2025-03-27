@@ -1,7 +1,8 @@
 const express = require("express");
 const app = express();
-const mysql = require("mysql");
+const mysql = require("mysql2");
 const cors = require("cors");
+import { insertarLista } from "./database.js";
 var bodyParser = require('body-parser');
 
 app.use(cors());
@@ -231,31 +232,18 @@ app.post("/insertarSiembra", (req, res) => {
     return res.send("INSERTED");
 })
 
-app.post("/insertarLista", async (req, res) => {
+App.post("/insertarLista", async (req, res) => {
+    const rows = await insertarLista(req.body)
+    res.status(201).send(rows)
+})
 
-    /* const sucu = req.query.sucursal;
-
-    db.query('DELETE FROM precios WHERE sucursal=?', [sucu],
-        (err, result) => {
-            if (err) {
-                return res.send(err)
-                console.log(err)
-            }
-        }
-    ); */
-    //console.log(req.body)
+/* app.post("/insertarLista", async (req, res) => {
 
     const valuesArray = [];
-    //const keysArray = [];
     for (let i = 0; i < req.body.length; i++) {
-        //let currKey = Object.keys(arrOfObj[i]);
         let currValue = Object.values(req.body[i]);
-        //keysArray.push(currKey);
         valuesArray.push(currValue);
-    }
-    //console.log("Keys Array: ", keysArray);
-    console.log("Values Array: ", valuesArray);
-
+    } */
     /* await req.body.map(element => {
         
         const clave = element.clave;
@@ -273,10 +261,10 @@ app.post("/insertarLista", async (req, res) => {
             }
         );
 
-    });
+    }); */
 
-    return res.send("INSERTED"); */
-})
+    /* return res.send("INSERTED");
+}) */
 
 app.get("/getclaves", (req, res) => {
     const rfc = req.query.rfc;
