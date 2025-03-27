@@ -241,22 +241,22 @@ app.post("/insertarSiembra", (req, res) => {
 
 app.post("/insertarLista", async (req, res) => {
 
-    const valuesArray = [];
+    /* const valuesArray = [];
     for (let i = 0; i < req.body.length; i++) {
         let currValue = Object.values(req.body[i]);
         valuesArray.push(currValue);
     }
     console.log(valuesArray)
 
-    let sql = "INSERT INTO precios (clave, precio, sucursal) VALUES ?"
+    let sql = "INSERT INTO precios (clave, precio, sucursal) VALUES ?" */
 
     //const [result] = await pool.query(sql, [valuesArray])
     //const written = result.affectedRows
 
     //const rows = await insertarLista(req.body)
     //res.status(200).send(written)
-    return res.send("INSERTED");
-})
+   /*  return res.send("INSERTED");
+}) */
 
     /* const sucu = req.query.sucursal;
 
@@ -270,15 +270,16 @@ app.post("/insertarLista", async (req, res) => {
     ); */
     //console.log(req.body)
 
-    const valuesArray = [];
+    /* const valuesArray = [];
     //const keysArray = [];
     for (let i = 0; i < req.body.length; i++) {
         //let currKey = Object.keys(arrOfObj[i]);
         let currValue = Object.values(req.body[i]);
         //keysArray.push(currKey);
         valuesArray.push(currValue);
-    } 
-/* await req.body.map(element => {
+    }  */
+
+await req.body.map(element => {
     
     const clave = element.clave;
     const precio = element.precio;
@@ -295,10 +296,10 @@ app.post("/insertarLista", async (req, res) => {
         }
     );
 
-}); */
+});
 
-/* return res.send("INSERTED");
-}) */
+return res.send("INSERTED");
+})
 
 app.get("/getclaves", (req, res) => {
     const rfc = req.query.rfc;
