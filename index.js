@@ -25,6 +25,7 @@ const db = mysql.createConnection({
 
 app.put("/insertClaveManualNoRegistrada", (req, res) => {
 
+    console.log(req.body)
     const clave = req.body.clave;
     const sucursal = req.body.sucursal;
     const rfc = req.body.proveedor;
@@ -34,7 +35,7 @@ app.put("/insertClaveManualNoRegistrada", (req, res) => {
     const estatus = "Pendiente";
     const dummy = "";
 
-    console.log(clave + "-" + sucursal + "-" + rfc + "-" +factura+"-"+claveProveedor+"-"+fecha+"-"+estatus)
+    //console.log(clave + "-" + sucursal + "-" + rfc + "-" +factura+"-"+claveProveedor+"-"+fecha+"-"+estatus)
 
     db.query('INSERT INTO clavesnoregistradas(clave,sucursal,rfc,factura,claveProveedor,estatus,fecha) values(?,?,?,?,?,?,?)',
         [clave, sucursal, rfc, factura, claveProveedor, estatus, fecha],
