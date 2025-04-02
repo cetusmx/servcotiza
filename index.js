@@ -23,7 +23,7 @@ const db = mysql.createConnection({
     database: "sealmark_cotizador"
 }).promise(); */
 
-app.put("/insertClaveManualNoRegistrada", (req, res) => {
+app.post("/insertClaveManualNoRegistrada", (req, res) => {
 
     console.log(req)
     const clave = req.body.clave;
