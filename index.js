@@ -25,7 +25,7 @@ const db = mysql.createConnection({
 
 app.put("/insertClaveManualNoRegistrada", (req, res) => {
 
-    console.log(req.body)
+    console.log(req.query)
     const clave = req.body.clave;
     const sucursal = req.body.sucursal;
     const rfc = req.body.proveedor;
