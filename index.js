@@ -34,6 +34,8 @@ app.put("/insertClaveManualNoRegistrada", (req, res) => {
     const estatus = "Pendiente";
     const dummy = "";
 
+    console.log(clave + "-" + sucursal + "-" + rfc + "-" +factura+"-"+claveProveedor+"-"+fecha+"-"+estatus)
+
     db.query('INSERT INTO clavesnoregistradas(clave,sucursal,rfc,factura,claveProveedor,estatus,fecha) values(?,?,?,?,?,?,?)',
         [clave, sucursal, rfc, factura, claveProveedor, estatus, fecha],
         (err, result) => {
