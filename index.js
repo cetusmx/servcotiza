@@ -25,7 +25,7 @@ const db = mysql.createConnection({
 
 app.post("/insertClaveManualNoRegistrada", (req, res) => {
 
-    console.log(req)
+    console.log(req.body)
     const clave = req.body.clave;
     const sucursal = req.body.sucursal;
     const rfc = req.body.proveedor;
@@ -399,6 +399,7 @@ app.post("/insertarMargenes", (req, res) => {
 })
 
 app.get("/getmargen", (req, res) => {
+    console.log(req.query)
     const familia = req.query.familia;
     const sucursal = req.query.sucursal;
     db.query('SELECT margen FROM margenes WHERE familia=? AND sucursal=?', [familia, sucursal],
