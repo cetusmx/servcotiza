@@ -324,6 +324,7 @@ app.get("/getclavesnoreg", (req, res) => {
         (err, result) => {
             if (err) {
                 console.groupCollapsed(err);
+                res.send(err)
             } else {
                 res.send(result);
                 //console.log(result);
