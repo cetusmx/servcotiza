@@ -64,12 +64,14 @@ app.put("/actualiza", (req, res) => {
     const margenMaz = req.body.ma;
     const margenZac = req.body.za;
     const margenTecmin = req.body.te;
+    const margenMayorista = req.body.my;
     const cambiaron = req.body.cambios;
     const sucDgo = "Durango";
     const sucFllo = "Fresnillo";
     const sucMzt = "Mazatlán";
     const sucZac = "Zacatecas";
     const sucTec = "Tecmin";
+    const sucMay = "Mayorista";
 
     var resultado = [];
 
@@ -123,6 +125,18 @@ app.put("/actualiza", (req, res) => {
     }
     if (cambiaron.includes(sucTec)) {
         db.query('UPDATE margenes SET margen=? WHERE sucursal=? AND familia=?', [margenTecmin, sucTec, familia],
+            (err, result) => {
+                if (err) {
+                    console.groupCollapsed(err);
+                } else {
+                    resultado.push(result);
+                    //res.send(result);
+                }
+            }
+        );
+    }
+    if (cambiaron.includes(sucMay)) {
+        db.query('UPDATE margenes SET margen=? WHERE sucursal=? AND familia=?', [margenMayorista, sucMay, familia],
             (err, result) => {
                 if (err) {
                     console.groupCollapsed(err);
