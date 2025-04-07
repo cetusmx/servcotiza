@@ -8,7 +8,12 @@ var bodyParser = require('body-parser');
 app.use(cors());
 /* app.use(express.json()); */
 /* app.use(bodyParser.json({ limit: '20mb' })); */
-
+app.use(express.json({
+    type: ['application/json', 'text/plain'],
+    limit: '50mb',
+    extended: true
+  }))
+  
 const db = mysql.createConnection({
     host: "sealmarket.mx",
     user: "sealmark_cotizauser",
