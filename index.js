@@ -13,7 +13,7 @@ app.use(express.json({
     limit: '50mb',
     extended: true
   }))
-  
+
 const db = mysql.createConnection({
     host: "sealmarket.mx",
     user: "sealmark_cotizauser",
@@ -55,6 +55,8 @@ app.post("/insertClaveManualNoRegistrada", (req, res) => {
 });
 
 app.put("/actualiza", (req, res) => {
+
+    console.log(req.body)
 
     const familia = req.body.fa;
     const margenDgo = req.body.du;
