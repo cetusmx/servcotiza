@@ -12,7 +12,7 @@ app.use(express.json({
     type: ['application/json', 'text/plain'],
     limit: '50mb',
     extended: true
-  }))
+}))
 
 const db = mysql.createConnection({
     host: "sealmarket.mx",
@@ -279,8 +279,8 @@ app.post("/insertarLista", async (req, res) => {
 
     //const rows = await insertarLista(req.body)
     //res.status(200).send(written)
-   /*  return res.send("INSERTED");
-}) */
+    /*  return res.send("INSERTED");
+ }) */
 
     /* const sucu = req.query.sucursal;
 
@@ -303,26 +303,26 @@ app.post("/insertarLista", async (req, res) => {
         valuesArray.push(currValue);
     }  */
 
-await req.body.map(element => {
-    
-    const clave = element.clave;
-    const precio = element.precio;
-    const sucursal = element.sucursal;
+    await req.body.map(element => {
 
-    console.log(clave + "-" + precio + "-" + sucursal);
+        const clave = element.clave;
+        const precio = element.precio;
+        const sucursal = element.sucursal;
 
-    db.query('INSERT INTO precios(clave,precio,sucursal) values(?,?,?)', [clave, precio, sucursal],
-        (err, result) => {
-            if (err) {
-                return res.send(err)
-                console.log(err)
+        console.log(clave + "-" + precio + "-" + sucursal);
+
+        db.query('INSERT INTO precios(clave,precio,sucursal) values(?,?,?)', [clave, precio, sucursal],
+            (err, result) => {
+                if (err) {
+                    return res.send(err)
+                    console.log(err)
+                }
             }
-        }
-    );
+        );
 
-});
+    });
 
-return res.send("INSERTED");
+    return res.send("INSERTED");
 })
 
 app.get("/getclaves", (req, res) => {
@@ -478,7 +478,7 @@ app.get("/getSolSiembra", (req, res) => {
 
 app.get("/getpreciosall", (req, res) => {
 
-    db.query('SELECT clave, precio, sucursal FROM precios',
+    db.query('SELECT clave, precio, precioIVA FROM preciosView ORDER BY clave',
         (err, result) => {
             if (err) {
                 console.groupCollapsed(err);
@@ -491,7 +491,7 @@ app.get("/getpreciosall", (req, res) => {
 
 app.get("/getprecios", (req, res) => {
     const sucursal = req.query.sucursal;
-    db.query('SELECT clave, precio, precioIVA FROM preciosView WHERE sucursal=?', [sucursal],
+    db.query('SELECT clave, precio, precioIVA FROM preciosView WHERE sucursal=? ORDER BY clave', [sucursal],
         (err, result) => {
             if (err) {
                 console.groupCollapsed(err);
