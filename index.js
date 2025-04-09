@@ -478,7 +478,7 @@ app.get("/getSolSiembra", (req, res) => {
 
 app.get("/getpreciosall", (req, res) => {
 
-    db.query('SELECT clave, precio, precioIVA FROM preciosView ORDER BY clave',
+    db.query('SELECT clave, precio, precioIVA, sucursal FROM preciosView ORDER BY clave',
         (err, result) => {
             if (err) {
                 console.groupCollapsed(err);
