@@ -327,6 +327,7 @@ app.post("/insertarLista", async (req, res) => {
 
 app.get("/getclaves", (req, res) => {
     const rfc = req.query.rfc;
+    console.log(rfc);
     db.query('SELECT clave, claveprove FROM claveProveeedorView WHERE rfc=?', [rfc],
         (err, result) => {
             if (err) {
