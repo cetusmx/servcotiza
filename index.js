@@ -341,8 +341,7 @@ app.get("/getclaves", (req, res) => {
 })
 
 app.get("/getresumeninventarios", (req, res) => {
-    //const rfc = req.query.rfc;
-    console.log(rfc);
+    
     db.query('SELECT InventarioID, qtyProductos, Ciudad, Almacen FROM inv_resumen_inventarios_app_view"',
         (err, result) => {
             if (err) {
