@@ -342,7 +342,7 @@ app.get("/getclaves", (req, res) => {
 
 app.get("/getresumeninventarios", (req, res) => {
     
-    db.query('SELECT InventarioID, qtyProductos, Ciudad, Almacen FROM inv_resumen_inventarios_app_view"',
+    db.query('SELECT InventarioID, qtyProductos, Ciudad, Almacen FROM inv_resumen_inventarios_app_view',
         (err, result) => {
             if (err) {
                 console.groupCollapsed(err);
