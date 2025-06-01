@@ -348,12 +348,43 @@ app.get("/getresumeninventarios", (req, res) => {
                 console.groupCollapsed(err);
             } else {
                 res.send(result);
-                //console.log(result);
+                console.log(result);
             }
         }
     );
 })
 
+app.get("/getresumeninventario", (req, res) => {
+    const InventarioID = req.query.id;
+    console.log(id);
+    db.query('SELECT InventarioID, qtyProductos, Ciudad, Almacen, Fecha, qtyLineas, ProgressPorcentage FROM inv_resumen_inventarios_app_view WHERE InventarioID=?',[InventarioID],
+        (err, result) => {
+            if (err) {
+                console.groupCollapsed(err);
+            } else {
+                res.send(result);
+                console.log(result);
+            }
+        }
+    );
+})
+
+app.get("/getlineasinvresumen", (req, res) => {
+    const InventarioID = req.query.id;
+    db.query('SELECT DISTINCT Linea, IFNULL(SUBSTRING(Descripcion,1,20),"Nombre línea") AS NombreLinea, count(Clave) AS qtyProductos FROM Inventarios WHERE InventarioID=? GROUP BY Linea, LineaDesc', [InventarioID],
+        (err, result) => {
+            if (err) {
+                console.groupCollapsed(err);
+                res.send(err)
+                console.log(err)
+            } else {
+                res.send(result);
+                console.log(result);
+            }
+        }
+    );
+    //return res.send("Completado");
+})
 app.get("/getclavesnoreg", (req, res) => {
     //const rfc = req.query.rfc;
     db.query('SELECT clave, claveProveedor, nombre, sucursal, factura, fecha FROM clavesnoregistradasview ORDER BY fecha',
