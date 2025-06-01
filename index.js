@@ -356,7 +356,7 @@ app.get("/getresumeninventarios", (req, res) => {
 
 app.get("/getresumeninventario", (req, res) => {
     const InventarioID = req.query.InventarioID;
-    console.log(id);
+    console.log(InventarioID);
     db.query('SELECT InventarioID, qtyProductos, Ciudad, Almacen, Fecha, qtyLineas, ProgressPorcentage FROM inv_resumen_inventarios_app_view WHERE InventarioID=?',[InventarioID],
         (err, result) => {
             if (err) {
