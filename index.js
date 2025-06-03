@@ -372,7 +372,7 @@ app.get("/getresumeninventario", (req, res) => {
 app.get("/getlineasinvresumen", (req, res) => {
     const InventarioID = req.query.id;
     //db.query('SELECT DISTINCT Linea, IFNULL(SUBSTRING(Descripcion,1,20),"Nombre línea") AS NombreLinea, count(Clave) AS qtyProductos FROM Inventarios WHERE InventarioID=? GROUP BY Linea, LineaDesc', [InventarioID],
-    db.query('SELECT InventarioID, Linea, qtyProductosLinea, isCounted FROM inv_lineas_view WHERE InventarioID=?', [InventarioID],
+    db.query('SELECT InventarioID, Linea, qtyProductosLinea, NombreLinea, isCounted FROM inv_lineas_app_view WHERE InventarioID=?', [InventarioID],
         (err, result) => {
             if (err) {
                 console.groupCollapsed(err);
