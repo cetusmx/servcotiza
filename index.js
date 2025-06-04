@@ -381,7 +381,7 @@ app.get("/getlineasinvresumen", (req, res) => {
                 //console.log(err)
             } else {
                 res.send(result);
-                console.log(result);
+                //console.log(result);
             }
         }
     );
