@@ -387,6 +387,28 @@ app.get("/getlineasinvresumen", (req, res) => {
     );
     //return res.send("Completado");
 })
+
+app.get("/getproductosporlineaeinv", (req, res) => {
+    const InventarioID = req.query.InventarioID;
+    const Linea = req.query.Linea;
+
+    console.log(InventarioID)
+    console.log(Linea)
+    db.query('SELECT InventarioID, Linea, Clave, Descripcion, Unidad FROM Inventarios WHERE InventarioID=? and Linea=?', [InventarioID,Linea],
+        (err, result) => {
+            if (err) {
+                console.groupCollapsed(err);
+                res.send(err)
+                console.log(err)
+            } else {
+                res.send(result);
+                console.log(result);
+            }
+        }
+    );
+    //return res.send("Completado");
+})
+
 app.get("/getclavesnoreg", (req, res) => {
     //const rfc = req.query.rfc;
     db.query('SELECT clave, claveProveedor, nombre, sucursal, factura, fecha FROM clavesnoregistradasview ORDER BY fecha',
