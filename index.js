@@ -371,14 +371,14 @@ app.get("/getresumeninventario", (req, res) => {
 
 app.get("/getlineasinvresumen", (req, res) => {
     const InventarioID = req.query.InventarioID;
-    console.log(InventarioID)
+    //console.log(InventarioID)
     //db.query('SELECT DISTINCT Linea, IFNULL(SUBSTRING(Descripcion,1,20),"Nombre línea") AS NombreLinea, count(Clave) AS qtyProductos FROM Inventarios WHERE InventarioID=? GROUP BY Linea, LineaDesc', [InventarioID],
     db.query('SELECT InventarioID, Linea, qtyProductosLinea, NombreLinea, isCounted FROM inv_lineas_app_view WHERE InventarioID=?', [InventarioID],
         (err, result) => {
             if (err) {
                 console.groupCollapsed(err);
                 res.send(err)
-                console.log(err)
+                //console.log(err)
             } else {
                 res.send(result);
                 console.log(result);
@@ -392,8 +392,8 @@ app.get("/getproductosporlineaeinv", (req, res) => {
     const InventarioID = req.query.InventarioID;
     const Linea = req.query.Linea;
 
-    console.log(InventarioID)
-    console.log(Linea)
+    //console.log(InventarioID)
+    //console.log(Linea)
     db.query('SELECT InventarioID, Linea, Clave, Descripcion, Unidad FROM Inventarios WHERE InventarioID=? and Linea=?', [InventarioID,Linea],
         (err, result) => {
             if (err) {
@@ -402,7 +402,7 @@ app.get("/getproductosporlineaeinv", (req, res) => {
                 console.log(err)
             } else {
                 res.send(result);
-                console.log(result);
+                //console.log(result);
             }
         }
     );
