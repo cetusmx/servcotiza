@@ -363,7 +363,7 @@ app.get("/getresumeninventario", (req, res) => {
                 console.groupCollapsed(err);
             } else {
                 res.send(result);
-                console.log(result);
+                //console.log(result);
             }
         }
     );
