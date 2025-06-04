@@ -402,7 +402,7 @@ app.get("/getproductosporlineaeinv", (req, res) => {
                 console.log(err)
             } else {
                 res.send(result);
-                //console.log(result);
+                console.log(result);
             }
         }
     );
@@ -413,8 +413,8 @@ app.get("/getdetallelinea", (req, res) => {
     const InventarioID = req.query.InventarioID;
     const Linea = req.query.Linea;
 
-    console.log(InventarioID)
-    console.log(Linea)
+    //console.log(InventarioID)
+    //console.log(Linea)
     db.query('SELECT InventarioID, Ciudad, Almacen, Linea, NombreLinea FROM inv_lineas_app_view WHERE InventarioID=? and Linea=?', [InventarioID,Linea],
         (err, result) => {
             if (err) {
@@ -423,7 +423,7 @@ app.get("/getdetallelinea", (req, res) => {
                 console.log(err)
             } else {
                 res.send(result);
-                console.log(result);
+                //console.log(result);
             }
         }
     );
