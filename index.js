@@ -356,7 +356,7 @@ app.get("/getresumeninventarios", (req, res) => {
 
 app.get("/getresumentarjetasini", (req, res) => {
     
-    db.query('SELECT Completos, Incompletos, Percentage FROM inv_resumen_tarjetas_inv_app_view',
+    db.query('SELECT Asignados, Completos, Incompletos, Percentage FROM inv_resumen_tarjetas_inv_app_view',
         (err, result) => {
             if (err) {
                 console.groupCollapsed(err);
