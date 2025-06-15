@@ -581,6 +581,19 @@ app.get("/getSolSiembra", (req, res) => {
     );
 })
 
+app.get("/gethistoricosmelate", (req, res) => {
+
+    db.query('SELECT id, n1, n2, n3, n4, n5, n6, adicional FROM Melate ORDER BY id',
+        (err, result) => {
+            if (err) {
+                console.groupCollapsed(err);
+            } else {
+                res.send(result);
+            }
+        }
+    );
+})
+
 app.get("/getpreciosall", (req, res) => {
 
     db.query('SELECT clave, precio, precioIVA, sucursal FROM preciosView ORDER BY clave',
