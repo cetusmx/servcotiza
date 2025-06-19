@@ -370,6 +370,21 @@ app.get("/getlineas", (req, res) => {
     );
 })
 
+app.get("/getnombresinv", (req, res) => {
+    const rfc = req.query.rfc;
+    console.log(rfc);
+    db.query("SELECT DISTINCT InventarioID FROM Inventarios",
+        (err, result) => {
+            if (err) {
+                console.groupCollapsed(err);
+            } else {
+                res.send(result);
+                //console.log(result);
+            }
+        }
+    );
+})
+
 app.get("/getresumeninventarios", (req, res) => {
     
     db.query('SELECT InventarioID, qtyProductos, Ciudad, Almacen, Fecha, qtyLineas, ProgressPorcentage FROM inv_resumen_inventarios_app_view',
