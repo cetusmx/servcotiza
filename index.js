@@ -340,6 +340,36 @@ app.get("/getclaves", (req, res) => {
     );
 })
 
+app.get("/getauditores", (req, res) => {
+    const rfc = req.query.rfc;
+    console.log(rfc);
+    db.query('SELECT Nombre FROM Auditores',
+        (err, result) => {
+            if (err) {
+                console.groupCollapsed(err);
+            } else {
+                res.send(result);
+                //console.log(result);
+            }
+        }
+    );
+})
+
+app.get("/getlineas", (req, res) => {
+    const rfc = req.query.rfc;
+    console.log(rfc);
+    db.query("SELECT DISTINCT clave FROM Productos WHERE linea<>''",
+        (err, result) => {
+            if (err) {
+                console.groupCollapsed(err);
+            } else {
+                res.send(result);
+                //console.log(result);
+            }
+        }
+    );
+})
+
 app.get("/getresumeninventarios", (req, res) => {
     
     db.query('SELECT InventarioID, qtyProductos, Ciudad, Almacen, Fecha, qtyLineas, ProgressPorcentage FROM inv_resumen_inventarios_app_view',
