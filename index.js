@@ -358,7 +358,7 @@ app.get("/getauditores", (req, res) => {
 app.get("/getlineas", (req, res) => {
     const rfc = req.query.rfc;
     console.log(rfc);
-    db.query("SELECT DISTINCT clave FROM Productos WHERE linea<>''",
+    db.query("SELECT DISTINCT linea FROM Productos WHERE linea<>''",
         (err, result) => {
             if (err) {
                 console.groupCollapsed(err);
