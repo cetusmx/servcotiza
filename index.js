@@ -343,7 +343,7 @@ app.get("/getclaves", (req, res) => {
 app.get("/getauditores", (req, res) => {
     const rfc = req.query.rfc;
     console.log(rfc);
-    db.query('SELECT Nombre FROM Auditores',
+    db.query('SELECT id, Nombre FROM Auditores',
         (err, result) => {
             if (err) {
                 console.groupCollapsed(err);
