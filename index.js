@@ -398,6 +398,19 @@ app.get("/getresumeninventarios", (req, res) => {
         }
     );
 })
+app.get("/getresumeninventariosgenerales", (req, res) => {
+    
+    db.query('SELECT InventarioID, Ciudad, Almacen, Ubicacion, Lineas, Auditor, Fecha FROM InventarioGenerals',
+        (err, result) => {
+            if (err) {
+                console.groupCollapsed(err);
+            } else {
+                res.send(result);
+                //console.log(result);
+            }
+        }
+    );
+})
 
 app.get("/getresumentarjetasini", (req, res) => {
     
