@@ -265,44 +265,6 @@ app.post("/insertarSiembra", (req, res) => {
 
 app.post("/insertarLista", async (req, res) => {
 
-    /* const valuesArray = [];
-    for (let i = 0; i < req.body.length; i++) {
-        let currValue = Object.values(req.body[i]);
-        valuesArray.push(currValue);
-    }
-    console.log(valuesArray)
-
-    let sql = "INSERT INTO precios (clave, precio, sucursal) VALUES ?" */
-
-    //const [result] = await pool.query(sql, [valuesArray])
-    //const written = result.affectedRows
-
-    //const rows = await insertarLista(req.body)
-    //res.status(200).send(written)
-    /*  return res.send("INSERTED");
- }) */
-
-    /* const sucu = req.query.sucursal;
-
-    db.query('DELETE FROM precios WHERE sucursal=?', [sucu],
-        (err, result) => {
-            if (err) {
-                return res.send(err)
-                console.log(err)
-            }
-        }
-    ); */
-    //console.log(req.body)
-
-    /* const valuesArray = [];
-    //const keysArray = [];
-    for (let i = 0; i < req.body.length; i++) {
-        //let currKey = Object.keys(arrOfObj[i]);
-        let currValue = Object.values(req.body[i]);
-        //keysArray.push(currKey);
-        valuesArray.push(currValue);
-    }  */
-
     await req.body.map(element => {
 
         const clave = element.clave;
