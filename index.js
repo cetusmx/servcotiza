@@ -349,7 +349,9 @@ app.get("/getnombresinv", (req, res) => {
 
 app.get("/getresumeninventarios", (req, res) => {
     
-    db.query('SELECT InventarioID, qtyProductos, Ciudad, Almacen, Fecha, qtyLineas, ProgressPorcentage FROM inv_resumen_inventarios_app_view',
+    const auditor = req.query.auditor;
+
+    db.query('SELECT InventarioID, qtyProductos, Ciudad, Almacen, Fecha, qtyLineas, ProgressPorcentage FROM inv_resumen_inventarios_app_view WHERE Auditor=?',[auditor],
         (err, result) => {
             if (err) {
                 console.groupCollapsed(err);
@@ -361,8 +363,24 @@ app.get("/getresumeninventarios", (req, res) => {
     );
 })
 app.get("/getresumeninventariosgenerales", (req, res) => {
-    
+
     db.query('SELECT InventarioID, Ciudad, Almacen, Ubicacion, Lineas, Auditor, Fecha FROM InventarioGenerals',
+        (err, result) => {
+            if (err) {
+                console.groupCollapsed(err);
+            } else {
+                res.send(result);
+                //console.log(result);
+            }
+        }
+    );
+})
+
+app.get("/getresumeninventariosgeneralesaudit", (req, res) => {
+
+    const auditor = req.query.auditor;
+    
+    db.query('SELECT InventarioID, Ciudad, Almacen, Ubicacion, Lineas, Auditor, Fecha FROM InventarioGenerals WHERE Auditor=?',[auditor],
         (err, result) => {
             if (err) {
                 console.groupCollapsed(err);
@@ -376,6 +394,8 @@ app.get("/getresumeninventariosgenerales", (req, res) => {
 
 app.get("/getresumentarjetasini", (req, res) => {
     
+    const auditor = req.query.auditor;
+
     db.query('SELECT Asignados, Completos, Incompletos, Percentage FROM inv_resumen_tarjetas_inv_app_view',
         (err, result) => {
             if (err) {
