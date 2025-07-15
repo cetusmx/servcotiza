@@ -471,10 +471,11 @@ app.get("/getproductosporlineaeinv", (req, res) => {
 app.get("/getdetallelinea", (req, res) => {
     const InventarioID = req.query.InventarioID;
     const Linea = req.query.Linea;
+    const auditor = req.query.auditor;
 
     //console.log(InventarioID)
     //console.log(Linea)
-    db.query('SELECT InventarioID, Ciudad, Almacen, Linea, NombreLinea FROM inv_lineas_app_view WHERE InventarioID=? and Linea=?', [InventarioID,Linea],
+    db.query('SELECT InventarioID, Ciudad, Almacen, Linea, NombreLinea FROM inv_lineas_app_view WHERE InventarioID=? and Linea=? and Auditor=?', [InventarioID,Linea,auditor],
         (err, result) => {
             if (err) {
                 console.groupCollapsed(err);
