@@ -351,7 +351,7 @@ app.get("/getresumeninventarios", (req, res) => {
     
     const auditor = req.query.auditor;
     console.log(auditor);
-    
+
     db.query('SELECT InventarioID, qtyProductos, Ciudad, Almacen, Fecha, qtyLineas, ProgressPorcentage FROM inv_resumen_inventarios_app_view WHERE Auditor=?',[auditor],
         (err, result) => {
             if (err) {
@@ -411,8 +411,9 @@ app.get("/getresumentarjetasini", (req, res) => {
 
 app.get("/getresumeninventario", (req, res) => {
     const InventarioID = req.query.InventarioID;
+    const auditor = req.query.auditor;
     //console.log(InventarioID);
-    db.query('SELECT InventarioID, qtyProductos, Ciudad, Almacen, Fecha, qtyLineas, ProgressPorcentage FROM inv_resumen_inventarios_app_view WHERE InventarioID=?',[InventarioID],
+    db.query('SELECT InventarioID, qtyProductos, Ciudad, Almacen, Fecha, qtyLineas, ProgressPorcentage FROM inv_resumen_inventarios_app_view WHERE InventarioID=? AND Auditor=?',[InventarioID,auditor],
         (err, result) => {
             if (err) {
                 console.groupCollapsed(err);
@@ -426,9 +427,10 @@ app.get("/getresumeninventario", (req, res) => {
 
 app.get("/getlineasinvresumen", (req, res) => {
     const InventarioID = req.query.InventarioID;
+    const auditor = req.query.auditor;
     //console.log(InventarioID)
     //db.query('SELECT DISTINCT Linea, IFNULL(SUBSTRING(Descripcion,1,20),"Nombre línea") AS NombreLinea, count(Clave) AS qtyProductos FROM Inventarios WHERE InventarioID=? GROUP BY Linea, LineaDesc', [InventarioID],
-    db.query('SELECT InventarioID, Linea, qtyProductosLinea, NombreLinea, isCounted FROM inv_lineas_app_view WHERE InventarioID=?', [InventarioID],
+    db.query('SELECT InventarioID, Linea, qtyProductosLinea, NombreLinea, isCounted FROM inv_lineas_app_view WHERE InventarioID=? AND Auditor=?', [InventarioID,auditor],
         (err, result) => {
             if (err) {
                 console.groupCollapsed(err);
