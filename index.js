@@ -430,8 +430,8 @@ app.get("/getlineasinvresumen", (req, res) => {
     const InventarioID = req.query.InventarioID;
     const auditor = req.query.auditor;
     console.log("getLineas ",InventarioID,"-",auditor);
-    //console.log(InventarioID)
-    //db.query('SELECT DISTINCT Linea, IFNULL(SUBSTRING(Descripcion,1,20),"Nombre línea") AS NombreLinea, count(Clave) AS qtyProductos FROM Inventarios WHERE InventarioID=? GROUP BY Linea, LineaDesc', [InventarioID],
+    console.log("SELECT InventarioID, Linea, qtyProductosLinea, NombreLinea, isCounted FROM inv_lineas_app_view WHERE InventarioID=",InventarioID," AND Auditor=",auditor);
+    
     db.query('SELECT InventarioID, Linea, qtyProductosLinea, NombreLinea, isCounted FROM inv_lineas_app_view WHERE InventarioID=? AND Auditor=?', [InventarioID,auditor],
         (err, result) => {
             if (err) {
@@ -440,7 +440,7 @@ app.get("/getlineasinvresumen", (req, res) => {
                 //console.log(err)
             } else {
                 res.send(result);
-                //console.log(result);
+                console.log(result);
             }
         }
     );
