@@ -412,7 +412,7 @@ app.get("/getresumentarjetasini", (req, res) => {
 app.get("/getresumeninventario", (req, res) => {
     const InventarioID = req.query.InventarioID;
     const auditor = req.query.auditor;
-    console.log("getResumenInv ",InventarioID,"-",auditor);
+    //console.log("getResumenInv ",InventarioID,"-",auditor);
     //console.log(InventarioID);
     db.query('SELECT InventarioID, qtyProductos, Ciudad, Almacen, Fecha, qtyLineas, ProgressPorcentage FROM inv_resumen_inventarios_app_view WHERE InventarioID=? AND Auditor=?',[InventarioID,auditor],
         (err, result) => {
@@ -429,8 +429,8 @@ app.get("/getresumeninventario", (req, res) => {
 app.get("/getlineasinvresumen", (req, res) => {
     const InventarioID = req.query.InventarioID;
     const auditor = req.query.auditor;
-    console.log("getLineas ",InventarioID,"-",auditor);
-    console.log("SELECT InventarioID, Linea, qtyProductosLinea, NombreLinea, isCounted FROM inv_lineas_app_view WHERE InventarioID=",InventarioID," AND Auditor=",auditor);
+    //console.log("getLineas ",InventarioID,"-",auditor);
+    //console.log("SELECT InventarioID, Linea, qtyProductosLinea, NombreLinea, isCounted FROM inv_lineas_app_view WHERE InventarioID=",InventarioID," AND Auditor=",auditor);
     
     db.query('SELECT InventarioID, Linea, qtyProductosLinea, NombreLinea, isCounted FROM inv_lineas_app_view WHERE InventarioID=? AND Auditor=?', [InventarioID,auditor],
         (err, result) => {
@@ -483,7 +483,7 @@ app.get("/getdetallelinea", (req, res) => {
                 console.log(err)
             } else {
                 res.send(result);
-                //console.log(result);
+                console.log(result);
             }
         }
     );
