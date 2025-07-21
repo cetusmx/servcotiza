@@ -363,6 +363,24 @@ app.get("/getresumeninventarios", (req, res) => {
         }
     );
 })
+
+app.get("/getresumeninventariosweb", (req, res) => {
+    
+    const auditor = req.query.auditor;
+    console.log(auditor);
+
+    db.query('SELECT InventarioID, qtyProductos, Ciudad, Almacen, Fecha, qtyLineas, ProgressPorcentage FROM inv_resumen_inventarios_app_view',
+        (err, result) => {
+            if (err) {
+                console.groupCollapsed(err);
+            } else {
+                res.send(result);
+                //console.log(result);
+            }
+        }
+    );
+})
+
 app.get("/getresumeninventariosgenerales", (req, res) => {
 
     db.query('SELECT InventarioID, Ciudad, Almacen, Ubicacion, Lineas, Auditor, Fecha FROM InventarioGenerals',
