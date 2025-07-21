@@ -369,7 +369,7 @@ app.get("/getresumeninventariosweb", (req, res) => {
     const auditor = req.query.auditor;
     console.log(auditor);
 
-    db.query('SELECT InventarioID, qtyProductos, Ciudad, Almacen, Fecha, qtyLineas, ProgressPorcentage FROM inv_resumen_inventarios_app_view',
+    db.query('SELECT InventarioID, qtyProductos, Ciudad, Almacen, Fecha, qtyLineas, ProgressPorcentage, Auditor FROM inv_resumen_inventarios_app_view',
         (err, result) => {
             if (err) {
                 console.groupCollapsed(err);
