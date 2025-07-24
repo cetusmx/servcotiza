@@ -468,7 +468,7 @@ app.get("/getlineasinvresumen", (req, res) => {
 app.get("/getproductosporlineaeinv", (req, res) => {
     const InventarioID = req.query.InventarioID;
     const Linea = req.query.Linea;
-    const auditor = req.query.auditor;
+    const auditor = req.query.Auditor;
     //console.log(InventarioID)
     //console.log(Linea)
     db.query('SELECT InventarioID, Linea, Clave, Descripcion, Unidad FROM Inventarios WHERE InventarioID=? and Linea=? and Auditor=?', [InventarioID,Linea,auditor],
