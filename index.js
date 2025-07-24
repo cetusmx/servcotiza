@@ -490,7 +490,7 @@ app.get("/getproductoscontadosporauditoreinv", (req, res) => {
     const InventarioID = req.query.InventarioID;
     //const Linea = req.query.Linea;
     const auditor = req.query.auditor;
-    //console.log(InventarioID)
+    console.log("Dentro getproductoscontadosporauditoreinv ",InventarioID,"-", auditor);
     //console.log(Linea)
     db.query('SELECT Clave, Descripcion, Unidad, Existencia, Observaciones FROM ProductoContados WHERE InventarioID=? and Auditor=?', [InventarioID,auditor],
         (err, result) => {
