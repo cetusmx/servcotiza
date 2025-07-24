@@ -492,7 +492,7 @@ app.get("/getproductoscontadosporauditoreinv", (req, res) => {
     const auditor = req.query.auditor;
     //console.log(InventarioID)
     //console.log(Linea)
-    db.query('SELECT Clave, Descripcion, Unidad, Existencia, Observaciones FROM ProductosContados WHERE InventarioID=? and Auditor=?', [InventarioID,auditor],
+    db.query('SELECT Clave, Descripcion, Unidad, Existencia, Observaciones FROM ProductoContados WHERE InventarioID=? and Auditor=?', [InventarioID,auditor],
         (err, result) => {
             if (err) {
                 console.groupCollapsed(err);
