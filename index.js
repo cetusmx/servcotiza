@@ -450,7 +450,7 @@ app.get("/getlineasinvresumen", (req, res) => {
     //console.log("getLineas ",InventarioID,"-",auditor);
     //console.log("SELECT InventarioID, Linea, qtyProductosLinea, NombreLinea, isCounted FROM inv_lineas_app_view WHERE InventarioID=",InventarioID," AND Auditor=",auditor);
     
-    db.query('SELECT InventarioID, Linea, qtyProductosLinea, NombreLinea, isCounted FROM inv_lineas_app_view WHERE InventarioID=? AND Auditor=?', [InventarioID,auditor],
+    db.query('SELECT InventarioID, Linea, qtyProductosLinea, NombreLinea, isCounted, isAdjusted FROM inv_lineas_app_view WHERE InventarioID=? AND Auditor=?', [InventarioID,auditor],
         (err, result) => {
             if (err) {
                 console.groupCollapsed(err);
