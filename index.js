@@ -507,6 +507,27 @@ app.get("/getproductoscontadosporauditoreinv", (req, res) => {
     //return res.send("Completado");
 })
 
+app.get("/getproductoscontadosporauditorporlineaeinv", (req, res) => {
+    const InventarioID = req.query.InventarioID;
+    const Linea = req.query.Linea;
+    const auditor = req.query.Auditor;
+    console.log("Dentro getproductoscontadosporauditorlineaeinv ",InventarioID,"-",Linea,"-", auditor);
+    //console.log(Linea)
+    db.query('SELECT Clave, Descripcion, Unidad, Existencia, Observaciones FROM ProductoContados WHERE InventarioID=? and Auditor=? and Linea=?', [InventarioID,auditor,Linea],
+        (err, result) => {
+            if (err) {
+                console.groupCollapsed(err);
+                res.send(err)
+                console.log(err)
+            } else {
+                res.send(result);
+                console.log(result);
+            }
+        }
+    );
+    //return res.send("Completado");
+})
+
 app.get("/getdetallelinea", (req, res) => {
     const InventarioID = req.query.InventarioID;
     const Linea = req.query.Linea;
