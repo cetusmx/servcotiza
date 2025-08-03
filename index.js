@@ -552,7 +552,7 @@ app.get("/getdetallelinea", (req, res) => {
 
 app.get("/getclavesnoreg", (req, res) => {
     //const rfc = req.query.rfc;
-    db.query('SELECT clave, claveProveedor, nombre, sucursal, factura, fecha FROM clavesnoregistradasview ORDER BY fecha',
+    db.query('SELECT clave, claveProveedor, nombre, sucursal, factura, fecha, estatus FROM clavesnoregistradasview WHERE estatus="Pendiente" ORDER BY fecha',
         (err, result) => {
             if (err) {
                 console.groupCollapsed(err);
