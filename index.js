@@ -1,11 +1,11 @@
 const express = require("express");
 const app = express();
 const mysql = require("mysql");
-const cors = require("cors");
+//const cors = require("cors");
 //import { insertarLista } from "./database.js";
 var bodyParser = require('body-parser');
 
-app.use(cors());
+//app.use(cors());
 /* app.use(express.json()); */
 /* app.use(bodyParser.json({ limit: '20mb' })); */
 app.use(express.json({
