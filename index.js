@@ -651,7 +651,7 @@ app.get("/getmargen", (req, res) => {
 })
 
 app.get("/getfamilias", (req, res) => {
-
+console.log("Inside getfamilias");
     db.query('SELECT DISTINCT familia FROM margenes order by familia',
         (err, result) => {
             if (err) {
