@@ -433,7 +433,7 @@ app.get("/getresumentarjetasini", (req, res) => {
 app.get("/getresumeninventario", (req, res) => {
     const InventarioID = req.query.InventarioID;
     const auditor = req.query.auditor;
-    //console.log("getResumenInv ",InventarioID,"-",auditor);
+    console.log("getResumenInv ",InventarioID,"-",auditor);
     //console.log(InventarioID);
     //db.query('SELECT InventarioID, qtyProductos, Ciudad, Almacen, Fecha, qtyLineas, ProgressPorcentage FROM inv_resumen_inventarios_app_view WHERE InventarioID=?',[InventarioID],
     db.query('SELECT InventarioID, qtyProductos, Ciudad, Almacen, Fecha, qtyLineas, ProgressPorcentage FROM inv_resumen_inventarios_app_view WHERE InventarioID=? AND Auditor=?',[InventarioID,auditor],
