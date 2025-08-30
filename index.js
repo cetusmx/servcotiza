@@ -8,6 +8,7 @@ var bodyParser = require('body-parser');
 //app.use(cors());
 /* app.use(express.json()); */
 /* app.use(bodyParser.json({ limit: '20mb' })); */
+
 app.use(express.json({
     type: ['application/json', 'text/plain'],
     limit: '50mb',
@@ -358,7 +359,7 @@ app.get("/getresumeninventarios", (req, res) => {
                 console.groupCollapsed(err);
             } else {
                 res.send(result);
-                //console.log(result);
+                console.log(result);
             }
         }
     );
