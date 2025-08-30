@@ -19,7 +19,8 @@ const db = mysql.createConnection({
     host: "sealmarket.mx",
     user: "sealmark_cotizauser",
     password: "Trof#4102",
-    database: "sealmark_cotizador"
+    database: "sealmark_cotizador",
+    charset: "utf8mb4" 
 });
 
 /* const pool = mysql.createPool({
@@ -434,7 +435,8 @@ app.get("/getresumeninventario", (req, res) => {
     const auditor = req.query.auditor;
     //console.log("getResumenInv ",InventarioID,"-",auditor);
     //console.log(InventarioID);
-    db.query('SELECT InventarioID, qtyProductos, Ciudad, Almacen, Fecha, qtyLineas, ProgressPorcentage FROM inv_resumen_inventarios_app_view WHERE InventarioID=? AND Auditor=?',[InventarioID,auditor],
+    db.query('SELECT InventarioID, qtyProductos, Ciudad, Almacen, Fecha, qtyLineas, ProgressPorcentage FROM inv_resumen_inventarios_app_view WHERE InventarioID=?',[InventarioID],
+    //db.query('SELECT InventarioID, qtyProductos, Ciudad, Almacen, Fecha, qtyLineas, ProgressPorcentage FROM inv_resumen_inventarios_app_view WHERE InventarioID=? AND Auditor=?',[InventarioID,auditor],
         (err, result) => {
             if (err) {
                 console.groupCollapsed(err);
