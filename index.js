@@ -20,7 +20,8 @@ const db = mysql.createConnection({
     user: "sealmark_cotizauser",
     password: "Trof#4102",
     database: "sealmark_cotizador",
-    charset: "utf8mb4" 
+    charset: "utf8mb4",
+    stringifyObjects: true,
 });
 
 /* const pool = mysql.createPool({
