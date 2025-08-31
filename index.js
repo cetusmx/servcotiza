@@ -474,8 +474,9 @@ app.get("/getproductosporlineaeinv", (req, res) => {
     const InventarioID = req.query.InventarioID;
     const Linea = req.query.Linea;
     const auditor = req.query.Auditor;
-    //console.log(InventarioID)
-    //console.log(Linea)
+    console.log(InventarioID)
+    console.log(Linea)
+    console.log(auditor)
     db.query('SELECT InventarioID, Linea, Clave, Descripcion, Unidad FROM Inventarios WHERE InventarioID=? and Linea=? and Auditor=?', [InventarioID,Linea,auditor],
         (err, result) => {
             if (err) {
