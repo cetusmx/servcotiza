@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const mysql = require("mysql");
+const mysql = require("mysql2/promise");
 //const cors = require("cors");
 //import { insertarLista } from "./database.js";
 var bodyParser = require('body-parser');
@@ -14,6 +14,20 @@ app.use(express.json({
     limit: '50mb',
     extended: true
 }))
+
+// Creamos un Pool en lugar de una conexión única
+const pool = mysql.createPool({
+    host: "sealmarket.mx",
+    user: "sealmark_cotizauser",
+    password: "Trof#4102",
+    database: "sealmark_cotizador",
+    waitForConnections: true,
+    connectionLimit: 10,       // Máximo 10 conexiones simultáneas
+    queueLimit: 0,
+    idleTimeout: 60000,        // Cierra conexiones inactivas tras 60 seg (evita el error de IO)
+    enableKeepAlive: true,     // Mantiene la conexión "despierta"
+    keepAliveInitialDelay: 0
+});
 
 const db = mysql.createConnection({
     host: "sealmarket.mx",
@@ -351,12 +365,12 @@ app.get("/getnombresinv", (req, res) => {
 })
 
 app.get("/getresumeninventarios", (req, res) => {
-    
+
     const auditor = req.query.auditor;
     console.log(auditor);
     console.log(`SELECT InventarioID, qtyProductos, Ciudad, Almacen, Fecha, qtyLineas, ProgressPorcentage FROM inv_resumen_inventarios_app_view WHERE Auditor=${auditor}`);
 
-    db.query('SELECT InventarioID, qtyProductos, Ciudad, Almacen, Fecha, qtyLineas, ProgressPorcentage FROM inv_resumen_inventarios_app_view WHERE Auditor=?',[auditor],
+    db.query('SELECT InventarioID, qtyProductos, Ciudad, Almacen, Fecha, qtyLineas, ProgressPorcentage FROM inv_resumen_inventarios_app_view WHERE Auditor=?', [auditor],
         (err, result) => {
             if (err) {
                 console.groupCollapsed(err);
@@ -369,7 +383,7 @@ app.get("/getresumeninventarios", (req, res) => {
 })
 
 app.get("/getresumeninventariosweb", (req, res) => {
-    
+
     const auditor = req.query.auditor;
     console.log(auditor);
 
@@ -402,8 +416,8 @@ app.get("/getresumeninventariosgenerales", (req, res) => {
 app.get("/getresumeninventariosgeneralesaudit", (req, res) => {
 
     const auditor = req.query.auditor;
-    
-    db.query('SELECT InventarioID, Ciudad, Almacen, Ubicacion, Lineas, Auditor, Fecha FROM InventarioGenerals WHERE Auditor=?',[auditor],
+
+    db.query('SELECT InventarioID, Ciudad, Almacen, Ubicacion, Lineas, Auditor, Fecha FROM InventarioGenerals WHERE Auditor=?', [auditor],
         (err, result) => {
             if (err) {
                 console.groupCollapsed(err);
@@ -416,7 +430,7 @@ app.get("/getresumeninventariosgeneralesaudit", (req, res) => {
 })
 
 app.get("/getresumentarjetasini", (req, res) => {
-    
+
     const auditor = req.query.auditor;
 
     db.query('SELECT Asignados, Completos, Incompletos, Percentage FROM inv_resumen_tarjetas_inv_app_view',
@@ -434,10 +448,10 @@ app.get("/getresumentarjetasini", (req, res) => {
 app.get("/getresumeninventario", (req, res) => {
     const InventarioID = req.query.InventarioID;
     const auditor = req.query.auditor;
-    console.log("getResumenInv ",InventarioID,"-",auditor);
+    console.log("getResumenInv ", InventarioID, "-", auditor);
     //console.log(InventarioID);
     //db.query('SELECT InventarioID, qtyProductos, Ciudad, Almacen, Fecha, qtyLineas, ProgressPorcentage FROM inv_resumen_inventarios_app_view WHERE InventarioID=?',[InventarioID],
-    db.query('SELECT InventarioID, qtyProductos, Ciudad, Almacen, Fecha, qtyLineas, ProgressPorcentage FROM inv_resumen_inventarios_app_view WHERE InventarioID=? AND Auditor=?',[InventarioID,auditor],
+    db.query('SELECT InventarioID, qtyProductos, Ciudad, Almacen, Fecha, qtyLineas, ProgressPorcentage FROM inv_resumen_inventarios_app_view WHERE InventarioID=? AND Auditor=?', [InventarioID, auditor],
         (err, result) => {
             if (err) {
                 console.groupCollapsed(err);
@@ -454,8 +468,8 @@ app.get("/getlineasinvresumen", (req, res) => {
     const auditor = req.query.auditor;
     //console.log("getLineas ",InventarioID,"-",auditor);
     //console.log("SELECT InventarioID, Linea, qtyProductosLinea, NombreLinea, isCounted FROM inv_lineas_app_view WHERE InventarioID=",InventarioID," AND Auditor=",auditor);
-    
-    db.query('SELECT InventarioID, Linea, qtyProductosLinea, NombreLinea, isCounted, isAdjusted FROM inv_lineas_app_view WHERE InventarioID=? AND Auditor=?', [InventarioID,auditor],
+
+    db.query('SELECT InventarioID, Linea, qtyProductosLinea, NombreLinea, isCounted, isAdjusted FROM inv_lineas_app_view WHERE InventarioID=? AND Auditor=?', [InventarioID, auditor],
         (err, result) => {
             if (err) {
                 console.groupCollapsed(err);
@@ -477,7 +491,7 @@ app.get("/getproductosporlineaeinv", (req, res) => {
     console.log(InventarioID)
     console.log(Linea)
     console.log(auditor)
-    db.query('SELECT InventarioID, Linea, Clave, Descripcion, Unidad FROM Inventarios WHERE InventarioID=? and Linea=? and Auditor=?', [InventarioID,Linea,auditor],
+    db.query('SELECT InventarioID, Linea, Clave, Descripcion, Unidad FROM Inventarios WHERE InventarioID=? and Linea=? and Auditor=?', [InventarioID, Linea, auditor],
         (err, result) => {
             if (err) {
                 console.groupCollapsed(err);
@@ -496,9 +510,9 @@ app.get("/getproductoscontadosporauditoreinv", (req, res) => {
     const InventarioID = req.query.InventarioID;
     //const Linea = req.query.Linea;
     const auditor = req.query.Auditor;
-    console.log("Dentro getproductoscontadosporauditoreinv ",InventarioID,"-", auditor);
+    console.log("Dentro getproductoscontadosporauditoreinv ", InventarioID, "-", auditor);
     //console.log(Linea)
-    db.query('SELECT Clave, Descripcion, Unidad, Existencia, Observaciones FROM ProductoContados WHERE InventarioID=? and Auditor=?', [InventarioID,auditor],
+    db.query('SELECT Clave, Descripcion, Unidad, Existencia, Observaciones FROM ProductoContados WHERE InventarioID=? and Auditor=?', [InventarioID, auditor],
         (err, result) => {
             if (err) {
                 console.groupCollapsed(err);
@@ -517,9 +531,9 @@ app.get("/getproductoscontadosporauditorporlineaeinv", (req, res) => {
     const InventarioID = req.query.InventarioID;
     const Linea = req.query.Linea;
     const auditor = req.query.Auditor;
-    console.log("Dentro getproductoscontadosporauditorlineaeinv ",InventarioID,"-",Linea,"-", auditor);
+    console.log("Dentro getproductoscontadosporauditorlineaeinv ", InventarioID, "-", Linea, "-", auditor);
     //console.log(Linea)
-    db.query('SELECT Clave, Descripcion, Unidad, Existencia, Observaciones FROM ProductoContados WHERE InventarioID=? and Auditor=? and Linea=?', [InventarioID,auditor,Linea],
+    db.query('SELECT Clave, Descripcion, Unidad, Existencia, Observaciones FROM ProductoContados WHERE InventarioID=? and Auditor=? and Linea=?', [InventarioID, auditor, Linea],
         (err, result) => {
             if (err) {
                 console.groupCollapsed(err);
@@ -541,7 +555,7 @@ app.get("/getdetallelinea", (req, res) => {
     //console.log("Endpoint getdetallelinea",InventarioID,"-",Linea,"--",auditor);
     //console.log("SELECT InventarioID, Ciudad, Almacen, Linea, NombreLinea FROM inv_lineas_app_view WHERE InventarioID=",InventarioID," and Linea=",Linea, "and Auditor",auditor);
     //console.log(Linea)
-    db.query('SELECT InventarioID, Ciudad, Almacen, Linea, NombreLinea FROM inv_lineas_app_view WHERE InventarioID=? and Linea=? and Auditor=?', [InventarioID,Linea,auditor],
+    db.query('SELECT InventarioID, Ciudad, Almacen, Linea, NombreLinea FROM inv_lineas_app_view WHERE InventarioID=? and Linea=? and Auditor=?', [InventarioID, Linea, auditor],
         (err, result) => {
             if (err) {
                 console.groupCollapsed(err);
@@ -654,20 +668,41 @@ app.get("/getmargen", (req, res) => {
     );
 })
 
-app.get("/getfamilias", (req, res) => {
-console.log("Inside getfamilias");
-    db.query('SELECT DISTINCT familia FROM margenes order by familia',
-        (err, result) => {
-            if (err) {
-                console.groupCollapsed(err);
-            } else {
-                res.send(result);
+//actualizada
+app.get("/getfamilias", async (req, res) => {
+    console.log("Consultando familias disponibles...");
+
+    try {
+        // Ejecutamos la consulta directamente desde el pool
+        // Usamos destructuring [result] porque mysql2/promise devuelve un array [filas, campos]
+        const [result] = await pool.query('SELECT DISTINCT familia FROM margenes ORDER BY familia');
+
+        // Enviamos el resultado al cliente
+        res.status(200).json(result);
+
+    } catch (err) {
+        // Si la base de datos falla, atrapamos el error aquí
+        console.error("Error al obtener familias:", err);
+
+        // Es vital responder algo al cliente para que la petición no expire (timeout)
+        res.status(500).send({
+            error: "No se pudieron obtener las familias",
+            details: err.message
+        });
+    }
+    /* console.log("Inside getfamilias");
+        db.query('SELECT DISTINCT familia FROM margenes order by familia',
+            (err, result) => {
+                if (err) {
+                    console.groupCollapsed(err);
+                } else {
+                    res.send(result);
+                }
             }
-        }
-    );
+        ); */
 })
 
-app.get("/margenes", (req, res) => {
+/* app.get("/margenes", (req, res) => {
 
     db.query('SELECT * FROM margenes',
         (err, result) => {
@@ -678,9 +713,33 @@ app.get("/margenes", (req, res) => {
             }
         }
     );
-})
+}) */
 
-app.get("/getSolSiembra", (req, res) => {
+//Actualizada
+app.get("/margenes", async (req, res) => {
+    //console.log("Obteniendo todos los márgenes...");
+
+    try {
+        // Ejecutamos la consulta usando el pool con promesas
+        // [rows] extrae directamente el arreglo de resultados
+        const [rows] = await pool.query('SELECT * FROM margenes');
+
+        // Enviamos los datos al cliente con estatus 200 (OK)
+        res.status(200).json(rows);
+
+    } catch (err) {
+        // Log detallado del error para tu depuración
+        console.error("Error en GET /margenes:", err);
+
+        // Notificamos al cliente que hubo un problema en el servidor
+        res.status(500).json({
+            error: "Error al consultar la tabla de márgenes",
+            details: err.message
+        });
+    }
+});
+
+/* app.get("/getSolSiembra", (req, res) => {
 
     db.query('SELECT cantidad, clave, observaciones, sucursal, fecha FROM faltantesview ORDER BY fecha',
         (err, result) => {
@@ -691,7 +750,20 @@ app.get("/getSolSiembra", (req, res) => {
             }
         }
     );
-})
+}) */
+
+//Actualizada
+app.get("/getSolSiembra", async (req, res) => {
+    try {
+        const [rows] = await pool.query(
+            'SELECT cantidad, clave, observaciones, sucursal, fecha FROM faltantesview ORDER BY fecha'
+        );
+        res.status(200).json(rows);
+    } catch (err) {
+        console.error("Error en GET /getSolSiembra:", err);
+        res.status(500).json({ error: "Error al obtener solicitudes de siembra", details: err.message });
+    }
+});
 
 app.get("/gethistoricosmelate", (req, res) => {
 
@@ -706,7 +778,7 @@ app.get("/gethistoricosmelate", (req, res) => {
     );
 })
 
-app.get("/getpreciosall", (req, res) => {
+/* app.get("/getpreciosall", (req, res) => {
 
     db.query('SELECT clave, precio, precioIVA, sucursal FROM preciosView ORDER BY clave',
         (err, result) => {
@@ -717,9 +789,22 @@ app.get("/getpreciosall", (req, res) => {
             }
         }
     );
-})
+}) */
 
-app.get("/getprecios", (req, res) => {
+//Actualiza
+app.get("/getpreciosall", async (req, res) => {
+    try {
+        const [rows] = await pool.query(
+            'SELECT clave, precio, precioIVA, sucursal FROM preciosView ORDER BY clave'
+        );
+        res.status(200).json(rows);
+    } catch (err) {
+        console.error("Error en GET /getpreciosall:", err);
+        res.status(500).json({ error: "Error al obtener todos los precios", details: err.message });
+    }
+});
+
+/* app.get("/getprecios", (req, res) => {
     const sucursal = req.query.sucursal;
     db.query('SELECT clave, precio, precioIVA FROM preciosView WHERE sucursal=? ORDER BY clave', [sucursal],
         (err, result) => {
@@ -731,7 +816,28 @@ app.get("/getprecios", (req, res) => {
             }
         }
     );
-})
+}) */
+
+//Actualiza
+app.get("/getprecios", async (req, res) => {
+    const { sucursal } = req.query;
+
+    // Validación básica: si no hay sucursal, avisamos al cliente de inmediato
+    if (!sucursal) {
+        return res.status(400).json({ error: "El parámetro 'sucursal' es requerido" });
+    }
+
+    try {
+        const [rows] = await pool.query(
+            'SELECT clave, precio, precioIVA FROM preciosView WHERE sucursal=? ORDER BY clave',
+            [sucursal]
+        );
+        res.status(200).json(rows);
+    } catch (err) {
+        console.error(`Error en GET /getprecios para sucursal ${sucursal}:`, err);
+        res.status(500).json({ error: "Error al obtener precios por sucursal", details: err.message });
+    }
+});
 
 app.listen(3001, () => {
     console.log("Corriendo en el puerto 3001")
