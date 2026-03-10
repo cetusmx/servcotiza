@@ -4,6 +4,7 @@ const mysql = require("mysql2/promise");
 //const cors = require("cors");
 //import { insertarLista } from "./database.js";
 var bodyParser = require('body-parser');
+const pool = require('./db');
 
 //app.use(cors());
 /* app.use(express.json()); */
@@ -16,7 +17,7 @@ app.use(express.json({
 }))
 
 // Creamos un Pool en lugar de una conexión única
-const pool = mysql.createPool({
+/* const pool = mysql.createPool({
     host: "sealmarket.mx",
     user: "sealmark_cotizauser",
     password: "Trof#4102",
@@ -27,23 +28,8 @@ const pool = mysql.createPool({
     idleTimeout: 60000,        // Cierra conexiones inactivas tras 60 seg (evita el error de IO)
     enableKeepAlive: true,     // Mantiene la conexión "despierta"
     keepAliveInitialDelay: 0
-});
+}); */
 
-const db = mysql.createConnection({
-    host: "sealmarket.mx",
-    user: "sealmark_cotizauser",
-    password: "Trof#4102",
-    database: "sealmark_cotizador",
-    charset: "utf8mb4",
-    stringifyObjects: true,
-});
-
-/* const pool = mysql.createPool({
-    host: "sealmarket.mx",
-    user: "sealmark_cotizauser",
-    password: "Trof#4102",
-    database: "sealmark_cotizador"
-}).promise(); */
 
 /* app.post("/insertClaveManualNoRegistrada", (req, res) => {
 
@@ -636,7 +622,7 @@ app.post("/insertClaveManualNoRegistrada", async (req, res) => {
         // Consultamos la vista respetando el nombre exacto: claveProveeedorView
         // Y los campos: clave, claveprove
         const [rows] = await pool.query(
-            'SELECT clave, claveprove FROM claveProveeedorView WHERE rfc=?', 
+            "SELECT * FROM proveedores_claves WHERE rfc COLLATE utf8mb4_unicode_ci = ?", 
             [rfc]
         );
 
