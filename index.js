@@ -622,7 +622,7 @@ app.post("/insertClaveManualNoRegistrada", async (req, res) => {
         // Consultamos la vista respetando el nombre exacto: claveProveeedorView
         // Y los campos: clave, claveprove
         const [rows] = await pool.query(
-            "SELECT clave, claveprove FROM claveProveeedorView WHERE rfc=?", 
+            "SELECT clave, claveprove FROM claveProveeedorView WHERE rfc COLLATE utf8mb4_unicode_ci = ?", 
             [rfc]
         );
 
