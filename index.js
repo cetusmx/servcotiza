@@ -1,14 +1,21 @@
+require('dotenv').config();
 const express = require("express");
 const app = express();
 const mysql = require("mysql2/promise");
-//const cors = require("cors");
+//const cors = require("cors");   //comentar en PRODUCCION
 //import { insertarLista } from "./database.js";
 var bodyParser = require('body-parser');
 const pool = require('./db');
 
-//app.use(cors());
-/* app.use(express.json()); */
-/* app.use(bodyParser.json({ limit: '20mb' })); */
+const catalogRoutes = require('./routes/catalogRoutes');
+
+// CONFIGURACIÓN DE CORS --- COMENTAR EN PRODUCCION
+/* app.use(cors({
+    origin: "http://localhost:3000", // Permite solo a tu frontend
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true
+})); */
+// FIN DE COMENTAR EN PRODUCCION
 
 app.use(express.json({
     type: ['application/json', 'text/plain'],
@@ -16,46 +23,7 @@ app.use(express.json({
     extended: true
 }))
 
-// Creamos un Pool en lugar de una conexión única
-/* const pool = mysql.createPool({
-    host: "sealmarket.mx",
-    user: "sealmark_cotizauser",
-    password: "Trof#4102",
-    database: "sealmark_cotizador",
-    waitForConnections: true,
-    connectionLimit: 10,       // Máximo 10 conexiones simultáneas
-    queueLimit: 0,
-    idleTimeout: 60000,        // Cierra conexiones inactivas tras 60 seg (evita el error de IO)
-    enableKeepAlive: true,     // Mantiene la conexión "despierta"
-    keepAliveInitialDelay: 0
-}); */
-
-
-/* app.post("/insertClaveManualNoRegistrada", (req, res) => {
-
-    console.log(req.body)
-    const clave = req.body.clave;
-    const sucursal = req.body.sucursal;
-    const rfc = req.body.proveedor;
-    const factura = req.body.factura;
-    const claveProveedor = req.body.claveProveedor;
-    const fecha = req.body.fecha;
-    const estatus = "Pendiente";
-    const dummy = "";
-
-    //console.log(clave + "-" + sucursal + "-" + rfc + "-" +factura+"-"+claveProveedor+"-"+fecha+"-"+estatus)
-
-    db.query('INSERT INTO clavesnoregistradas(clave,sucursal,rfc,factura,claveProveedor,estatus,fecha) values(?,?,?,?,?,?,?)',
-        [clave, sucursal, rfc, factura, claveProveedor, estatus, fecha],
-        (err, result) => {
-            if (err) {
-                console.log(err)
-                return res.send(err)
-            }
-        }
-    );
-    return res.send("INSERTED");
-}); */
+app.use('/', catalogRoutes);
 
 //Actualizada
 app.post("/insertClaveManualNoRegistrada", async (req, res) => {
@@ -92,103 +60,6 @@ app.post("/insertClaveManualNoRegistrada", async (req, res) => {
         });
     }
 });
-
-/* app.put("/actualiza", (req, res) => {
-
-    console.log(req.body)
-
-    const familia = req.body.fa;
-    const margenDgo = req.body.du;
-    const margenFllo = req.body.fr;
-    const margenMaz = req.body.ma;
-    const margenZac = req.body.za;
-    const margenTecmin = req.body.te;
-    const margenMayorista = req.body.my;
-    const cambiaron = req.body.cambios;
-    const sucDgo = "Durango";
-    const sucFllo = "Fresnillo";
-    const sucMzt = "Mazatlán";
-    const sucZac = "Zacatecas";
-    const sucTec = "Tecmin";
-    const sucMay = "Mayorista";
-
-    var resultado = [];
-
-    if (cambiaron.includes(sucDgo)) {
-        db.query('UPDATE margenes SET margen=? WHERE sucursal=? AND familia=?', [margenDgo, sucDgo, familia],
-            (err, result) => {
-                if (err) {
-                    console.groupCollapsed(err);
-                } else {
-                    resultado.push(result);
-                    //res.send(result);
-                }
-            }
-        );
-    }
-    if (cambiaron.includes(sucFllo)) {
-        db.query('UPDATE margenes SET margen=? WHERE sucursal=? AND familia=?', [margenFllo, sucFllo, familia],
-            (err, result) => {
-                if (err) {
-                    console.groupCollapsed(err);
-                } else {
-                    resultado.push(result);
-                    //res.send(result);
-                }
-            }
-        );
-    }
-    if (cambiaron.includes(sucMzt)) {
-        db.query('UPDATE margenes SET margen=? WHERE sucursal=? AND familia=?', [margenMaz, sucMzt, familia],
-            (err, result) => {
-                if (err) {
-                    console.groupCollapsed(err);
-                } else {
-                    resultado.push(result);
-                    //res.send(result);
-                }
-            }
-        );
-    }
-    if (cambiaron.includes(sucZac)) {
-        db.query('UPDATE margenes SET margen=? WHERE sucursal=? AND familia=?', [margenZac, sucZac, familia],
-            (err, result) => {
-                if (err) {
-                    console.groupCollapsed(err);
-                } else {
-                    resultado.push(result);
-                    //res.send(result);
-                }
-            }
-        );
-    }
-    if (cambiaron.includes(sucTec)) {
-        db.query('UPDATE margenes SET margen=? WHERE sucursal=? AND familia=?', [margenTecmin, sucTec, familia],
-            (err, result) => {
-                if (err) {
-                    console.groupCollapsed(err);
-                } else {
-                    resultado.push(result);
-                    //res.send(result);
-                }
-            }
-        );
-    }
-    if (cambiaron.includes(sucMay)) {
-        db.query('UPDATE margenes SET margen=? WHERE sucursal=? AND familia=?', [margenMayorista, sucMay, familia],
-            (err, result) => {
-                if (err) {
-                    console.groupCollapsed(err);
-                } else {
-                    resultado.push(result);
-                    //res.send(result);
-                }
-            }
-        );
-    }
-    console.log(resultado);
-    res.send(resultado);
-}) */
 
     //Actualizada
     app.put("/actualiza", async (req, res) => {
@@ -237,36 +108,6 @@ app.post("/insertClaveManualNoRegistrada", async (req, res) => {
     }
 });
 
-/* app.post("/updateListaPrecios", (req, res) => {
-    const data = req.body;
-    console.log('Received data:', data);
-    res.status(200).json({ message: 'Data received successfully.' });
-}); */
-
-/* app.post("/updateListaPrecios", (req, res) => {
-    console.log(req.body);
-
-    req.body.map(element => {
-        console.log(element);
-
-        const clave = element.Clave;
-        const precio = element.Precio;
-        const sucursal = element.Sucursal;
-
-        console.log(clave + "-" + precio + "-" + sucursal);
-        db.query('UPDATE precios SET precio=? WHERE clave=? AND sucursal=?', [precio, clave, sucursal],
-            //db.query('INSERT INTO precios(clave,precio,sucursal) values(?,?,?)', [clave,precio,sucursal],
-            (err, result) => {
-                if (err) {
-                    return res.send(err)
-                    console.log(err)
-                }
-            }
-        );
-    });
-    return res.send("INSERTED");
-}) */
-
     //Actualizada
     app.post("/updateListaPrecios", async (req, res) => {
     console.log("Cuerpo recibido:", req.body);
@@ -309,31 +150,6 @@ app.post("/insertClaveManualNoRegistrada", async (req, res) => {
     }
 });
 
-/* app.post("/updateMargenes", (req, res) => {
-    console.log(req.body);
-
-    req.body.map(element => {
-        console.log(element);
-
-        const margen = element.margen;
-        const familia = element.familia;
-        const sucursal = element.sucursal;
-
-        console.log(margen + "-" + familia + "-" + sucursal);
-        db.query('UPDATE margenes SET margen=? WHERE familia=? AND sucursal=?', [margen, familia, sucursal],
-            (err, result) => {
-                if (err) {
-                    return res.send(err)
-                    console.log(err)
-                }
-            }
-        );
-
-    });
-
-    return res.send("INSERTED");
-}) */
-
     //Actualizada
     app.post("/updateMargenes", async (req, res) => {
     console.log("Iniciando actualización masiva de márgenes...");
@@ -374,21 +190,6 @@ app.post("/insertClaveManualNoRegistrada", async (req, res) => {
     }
 });
 
-/* app.post("/borrarLista", (req, res) => {
-
-    const sucursal = req.query.sucursal;
-
-    db.query('DELETE FROM precios WHERE sucursal=?', [sucursal],
-        (err, result) => {
-            if (err) {
-                return res.send(err)
-                console.log(err)
-            }
-        }
-    );
-    return res.send("BORRADA");
-}) */
-
     //Actualizada
     app.post("/borrarLista", async (req, res) => {
     // Mantenemos la extracción del parámetro sucursal desde req.query
@@ -421,19 +222,6 @@ app.post("/insertClaveManualNoRegistrada", async (req, res) => {
     }
 });
 
-/* app.get("/borrarMargenes", (req, res) => {
-
-    const sucursal = req.query.sucursal;
-
-    db.query('TRUNCATE TABLE margenes',
-        (err, result) => {
-            if (err) {
-                return res.send(err)
-                console.log(err)
-            }
-        }
-    );
-}) */
 
     //Actualizada
     app.get("/borrarMargenes", async (req, res) => {
@@ -458,34 +246,6 @@ app.post("/insertClaveManualNoRegistrada", async (req, res) => {
         });
     }
 });
-
-/* app.post("/insertarSiembra", (req, res) => {
-    console.log(req.body);
-
-    const fecha = req.body.fecha;
-    const clave = req.body.clave;
-    const familia = "";
-    const motivo = "";
-    const veces = "";
-    const sucursal = req.body.sucursal;
-    const observaciones = req.body.observaciones;
-    const maximo = req.body.qty;
-    const estatus = "Abierta";
-    const autorizacion = "Pendiente";
-
-    console.log(clave + "-" + familia + "-" + motivo + "-" + veces + "-" + sucursal + "-" + observaciones + "-" + maximo);
-
-    db.query('INSERT INTO siembraProds(fecha,clave,familia,motivo,veces,observaciones,sucursal,maximo,estatus,autorizacion) values(?,?,?,?,?,?,?,?,?,?)',
-        [fecha, clave, familia, motivo, veces, observaciones, sucursal, maximo, estatus, autorizacion],
-        (err, result) => {
-            if (err) {
-                return res.send(err)
-                console.log(err)
-            }
-        }
-    );
-    return res.send("INSERTED");
-}) */
 
     //Actualizada
     app.post("/insertarSiembra", async (req, res) => {
@@ -528,30 +288,6 @@ app.post("/insertClaveManualNoRegistrada", async (req, res) => {
     }
 });
 
-/* app.post("/insertarLista", async (req, res) => {
-
-    await req.body.map(element => {
-
-        const clave = element.clave;
-        const precio = element.precio;
-        const sucursal = element.sucursal;
-
-        console.log(clave + "-" + precio + "-" + sucursal);
-
-        db.query('INSERT INTO precios(clave,precio,sucursal) values(?,?,?)', [clave, precio, sucursal],
-            (err, result) => {
-                if (err) {
-                    return res.send(err)
-                    console.log(err)
-                }
-            }
-        );
-
-    });
-
-    return res.send("INSERTED");
-}) */
-
     //Actualizada
     app.post("/insertarLista", async (req, res) => {
     // Obtenemos una conexión específica para esta ráfaga de inserciones
@@ -590,21 +326,6 @@ app.post("/insertClaveManualNoRegistrada", async (req, res) => {
     }
 });
 
-/* app.get("/getclaves", (req, res) => {
-    const rfc = req.query.rfc;
-    console.log(rfc);
-    db.query('SELECT clave, claveprove FROM claveProveeedorView WHERE rfc=?', [rfc],
-        (err, result) => {
-            if (err) {
-                console.groupCollapsed(err);
-            } else {
-                res.send(result);
-                //console.log(result);
-            }
-        }
-    );
-}) */
-
     //Actualizada
     app.get("/getclaves", async (req, res) => {
     // Mantenemos la extracción del parámetro rfc
@@ -641,21 +362,6 @@ app.post("/insertClaveManualNoRegistrada", async (req, res) => {
     }
 });
 
-/* app.get("/getauditores", (req, res) => {
-    const rfc = req.query.rfc;
-    console.log(rfc);
-    db.query('SELECT id, Nombre FROM Auditores',
-        (err, result) => {
-            if (err) {
-                console.groupCollapsed(err);
-            } else {
-                res.send(result);
-                //console.log(result);
-            }
-        }
-    );
-}) */
-
     //Actualizada
     app.get("/getauditores", async (req, res) => {
     // Mantenemos la recepción del RFC para el log original
@@ -683,21 +389,6 @@ app.post("/insertClaveManualNoRegistrada", async (req, res) => {
         });
     }
 });
-
-/* app.get("/getlineas", (req, res) => {
-    const rfc = req.query.rfc;
-    console.log(rfc);
-    db.query("SELECT DISTINCT linea FROM Productos WHERE linea<>''",
-        (err, result) => {
-            if (err) {
-                console.groupCollapsed(err);
-            } else {
-                res.send(result);
-                //console.log(result);
-            }
-        }
-    );
-}) */
 
     //Actualizada
     app.get("/getlineas", async (req, res) => {
@@ -727,21 +418,6 @@ app.post("/insertClaveManualNoRegistrada", async (req, res) => {
     }
 });
 
-/* app.get("/getnombresinv", (req, res) => {
-    const rfc = req.query.rfc;
-    console.log(rfc);
-    db.query("SELECT DISTINCT InventarioID FROM Inventarios",
-        (err, result) => {
-            if (err) {
-                console.groupCollapsed(err);
-            } else {
-                res.send(result);
-                //console.log(result);
-            }
-        }
-    );
-}) */
-
     //Actualizada
     app.get("/getnombresinv", async (req, res) => {
     // Mantenemos la extracción y el log del RFC original
@@ -768,24 +444,6 @@ app.post("/insertClaveManualNoRegistrada", async (req, res) => {
         });
     }
 });
-
-/* app.get("/getresumeninventarios", (req, res) => {
-
-    const auditor = req.query.auditor;
-    console.log(auditor);
-    console.log(`SELECT InventarioID, qtyProductos, Ciudad, Almacen, Fecha, qtyLineas, ProgressPorcentage FROM inv_resumen_inventarios_app_view WHERE Auditor=${auditor}`);
-
-    db.query('SELECT InventarioID, qtyProductos, Ciudad, Almacen, Fecha, qtyLineas, ProgressPorcentage FROM inv_resumen_inventarios_app_view WHERE Auditor=?', [auditor],
-        (err, result) => {
-            if (err) {
-                console.groupCollapsed(err);
-            } else {
-                res.send(result);
-                console.log(result);
-            }
-        }
-    );
-}) */
 
     //Actualizada
     app.get("/getresumeninventarios", async (req, res) => {
@@ -825,23 +483,6 @@ app.post("/insertClaveManualNoRegistrada", async (req, res) => {
     }
 });
 
-/* app.get("/getresumeninventariosweb", (req, res) => {
-
-    const auditor = req.query.auditor;
-    console.log(auditor);
-
-    db.query('SELECT InventarioID, qtyProductos, Ciudad, Almacen, Fecha, qtyLineas, ProgressPorcentage, Auditor FROM inv_resumen_inventarios_app_view',
-        (err, result) => {
-            if (err) {
-                console.groupCollapsed(err);
-            } else {
-                res.send(result);
-                //console.log(result);
-            }
-        }
-    );
-}) */
-
     //Actualizada
     app.get("/getresumeninventariosweb", async (req, res) => {
     // Mantenemos tu log original para monitorear quién consulta
@@ -868,20 +509,6 @@ app.post("/insertClaveManualNoRegistrada", async (req, res) => {
     }
 });
 
-/* app.get("/getresumeninventariosgenerales", (req, res) => {
-
-    db.query('SELECT InventarioID, Ciudad, Almacen, Ubicacion, Lineas, Auditor, Fecha FROM InventarioGenerals',
-        (err, result) => {
-            if (err) {
-                console.groupCollapsed(err);
-            } else {
-                res.send(result);
-                //console.log(result);
-            }
-        }
-    );
-}) */
-
     //Actualizada
     app.get("/getresumeninventariosgenerales", async (req, res) => {
     console.log("Consultando todos los inventarios generales...");
@@ -907,22 +534,6 @@ app.post("/insertClaveManualNoRegistrada", async (req, res) => {
         });
     }
 });
-
-/* app.get("/getresumeninventariosgeneralesaudit", (req, res) => {
-
-    const auditor = req.query.auditor;
-
-    db.query('SELECT InventarioID, Ciudad, Almacen, Ubicacion, Lineas, Auditor, Fecha FROM InventarioGenerals WHERE Auditor=?', [auditor],
-        (err, result) => {
-            if (err) {
-                console.groupCollapsed(err);
-            } else {
-                res.send(result);
-                //console.log(result);
-            }
-        }
-    );
-}) */
 
     //Actualizada
     app.get("/getresumeninventariosgeneralesaudit", async (req, res) => {
@@ -957,22 +568,6 @@ app.post("/insertClaveManualNoRegistrada", async (req, res) => {
     }
 });
 
-/* app.get("/getresumentarjetasini", (req, res) => {
-
-    const auditor = req.query.auditor;
-
-    db.query('SELECT Asignados, Completos, Incompletos, Percentage FROM inv_resumen_tarjetas_inv_app_view',
-        (err, result) => {
-            if (err) {
-                console.groupCollapsed(err);
-            } else {
-                res.send(result);
-                //console.log(result);
-            }
-        }
-    );
-}) */
-
     //Actualizada
     app.get("/getresumentarjetasini", async (req, res) => {
     // Mantenemos la extracción del parámetro aunque no se use en el query actual
@@ -999,24 +594,6 @@ app.post("/insertClaveManualNoRegistrada", async (req, res) => {
         });
     }
 });
-
-/* app.get("/getresumeninventario", (req, res) => {
-    const InventarioID = req.query.InventarioID;
-    const auditor = req.query.auditor;
-    console.log("getResumenInv ", InventarioID, "-", auditor);
-    //console.log(InventarioID);
-    //db.query('SELECT InventarioID, qtyProductos, Ciudad, Almacen, Fecha, qtyLineas, ProgressPorcentage FROM inv_resumen_inventarios_app_view WHERE InventarioID=?',[InventarioID],
-    db.query('SELECT InventarioID, qtyProductos, Ciudad, Almacen, Fecha, qtyLineas, ProgressPorcentage FROM inv_resumen_inventarios_app_view WHERE InventarioID=? AND Auditor=?', [InventarioID, auditor],
-        (err, result) => {
-            if (err) {
-                console.groupCollapsed(err);
-            } else {
-                res.send(result);
-                //console.log(result);
-            }
-        }
-    );
-}) */
 
     //Actualizada
     app.get("/getresumeninventario", async (req, res) => {
@@ -1055,27 +632,6 @@ app.post("/insertClaveManualNoRegistrada", async (req, res) => {
     }
 });
 
-/* app.get("/getlineasinvresumen", (req, res) => {
-    const InventarioID = req.query.InventarioID;
-    const auditor = req.query.auditor;
-    //console.log("getLineas ",InventarioID,"-",auditor);
-    //console.log("SELECT InventarioID, Linea, qtyProductosLinea, NombreLinea, isCounted FROM inv_lineas_app_view WHERE InventarioID=",InventarioID," AND Auditor=",auditor);
-
-    db.query('SELECT InventarioID, Linea, qtyProductosLinea, NombreLinea, isCounted, isAdjusted FROM inv_lineas_app_view WHERE InventarioID=? AND Auditor=?', [InventarioID, auditor],
-        (err, result) => {
-            if (err) {
-                console.groupCollapsed(err);
-                res.send(err)
-                //console.log(err)
-            } else {
-                res.send(result);
-                console.log(result);
-            }
-        }
-    );
-    //return res.send("Completado");
-}) */
-
     //Actualizada
     app.get("/getlineasinvresumen", async (req, res) => {
     // Mantenemos tus nombres exactos de variables y parámetros de query
@@ -1109,28 +665,6 @@ app.post("/insertClaveManualNoRegistrada", async (req, res) => {
         });
     }
 });
-
-/* app.get("/getproductosporlineaeinv", (req, res) => {
-    const InventarioID = req.query.InventarioID;
-    const Linea = req.query.Linea;
-    const auditor = req.query.auditor;
-    console.log(InventarioID)
-    console.log(Linea)
-    console.log(auditor)
-    db.query('SELECT InventarioID, Linea, Clave, Descripcion, Unidad FROM Inventarios WHERE InventarioID=? and Linea=? and Auditor=?', [InventarioID, Linea, auditor],
-        (err, result) => {
-            if (err) {
-                console.groupCollapsed(err);
-                res.send(err)
-                console.log(err)
-            } else {
-                res.send(result);
-                console.log(result);
-            }
-        }
-    );
-    //return res.send("Completado");
-}) */
 
     //Actualizada
     app.get("/getproductosporlineaeinv", async (req, res) => {
@@ -1171,27 +705,6 @@ app.post("/insertClaveManualNoRegistrada", async (req, res) => {
     }
 });
 
-/* app.get("/getproductoscontadosporauditoreinv", (req, res) => {
-    const InventarioID = req.query.InventarioID;
-    //const Linea = req.query.Linea;
-    const auditor = req.query.Auditor;
-    console.log("Dentro getproductoscontadosporauditoreinv ", InventarioID, "-", auditor);
-    //console.log(Linea)
-    db.query('SELECT Clave, Descripcion, Unidad, Existencia, Observaciones FROM ProductoContados WHERE InventarioID=? and Auditor=?', [InventarioID, auditor],
-        (err, result) => {
-            if (err) {
-                console.groupCollapsed(err);
-                res.send(err)
-                console.log(err)
-            } else {
-                res.send(result);
-                console.log(result);
-            }
-        }
-    );
-    //return res.send("Completado");
-}) */
-
     //Actualizada
     app.get("/getproductoscontadosporauditoreinv", async (req, res) => {
     // Respetamos tus nombres de variables y parámetros de query
@@ -1227,27 +740,6 @@ app.post("/insertClaveManualNoRegistrada", async (req, res) => {
         });
     }
 });
-
-/* app.get("/getproductoscontadosporauditorporlineaeinv", (req, res) => {
-    const InventarioID = req.query.InventarioID;
-    const Linea = req.query.Linea;
-    const auditor = req.query.Auditor;
-    console.log("Dentro getproductoscontadosporauditorlineaeinv ", InventarioID, "-", Linea, "-", auditor);
-    //console.log(Linea)
-    db.query('SELECT Clave, Descripcion, Unidad, Existencia, Observaciones FROM ProductoContados WHERE InventarioID=? and Auditor=? and Linea=?', [InventarioID, auditor, Linea],
-        (err, result) => {
-            if (err) {
-                console.groupCollapsed(err);
-                res.send(err)
-                console.log(err)
-            } else {
-                res.send(result);
-                console.log(result);
-            }
-        }
-    );
-    //return res.send("Completado");
-}) */
 
     //Actualizada
     app.get("/getproductoscontadosporauditorporlineaeinv", async (req, res) => {
@@ -1285,28 +777,6 @@ app.post("/insertClaveManualNoRegistrada", async (req, res) => {
     }
 });
 
-/* app.get("/getdetallelinea", (req, res) => {
-    const InventarioID = req.query.InventarioID;
-    const Linea = req.query.Linea;
-    const auditor = req.query.auditor;
-    //console.log("Endpoint getdetallelinea",InventarioID,"-",Linea,"--",auditor);
-    //console.log("SELECT InventarioID, Ciudad, Almacen, Linea, NombreLinea FROM inv_lineas_app_view WHERE InventarioID=",InventarioID," and Linea=",Linea, "and Auditor",auditor);
-    //console.log(Linea)
-    db.query('SELECT InventarioID, Ciudad, Almacen, Linea, NombreLinea FROM inv_lineas_app_view WHERE InventarioID=? and Linea=? and Auditor=?', [InventarioID, Linea, auditor],
-        (err, result) => {
-            if (err) {
-                console.groupCollapsed(err);
-                res.send(err)
-                console.log(err)
-            } else {
-                res.send(result);
-                console.log(result);
-            }
-        }
-    );
-    //return res.send("Completado");
-}) */
-
     //Actualizada
     app.get("/getdetallelinea", async (req, res) => {
     // Respetamos tus nombres de variables y parámetros de query exactos
@@ -1343,23 +813,6 @@ app.post("/insertClaveManualNoRegistrada", async (req, res) => {
     }
 });
 
-/* app.get("/getclavesnoreg", (req, res) => {
-    //const rfc = req.query.rfc;
-    db.query('SELECT clave, claveProveedor, nombre, sucursal, factura, fecha, estatus FROM clavesnoregistradasview WHERE estatus="Pendiente" ORDER BY fecha',
-        (err, result) => {
-            if (err) {
-                console.groupCollapsed(err);
-                res.send(err)
-                console.log(err)
-            } else {
-                res.send(result);
-                console.log(result);
-            }
-        }
-    );
-    //return res.send("Completado");
-}) */
-
     //Actualizada
     app.get("/getclavesnoreg", async (req, res) => {
     console.log("Consultando claves no registradas pendientes...");
@@ -1385,33 +838,6 @@ app.post("/insertClaveManualNoRegistrada", async (req, res) => {
         });
     }
 });
-
-/* app.get("/getclavesPuntuales", (req, res) => {
-
-    let cantidad;
-    let producto;
-    let clave = "";
-
-    const productos = req.query.productos;
-    const rfc = req.query.rfc;
-
-    for (i = 0; i < req.query.productos.length; i++) {
-        db.query('SELECT clave FROM clavesProveeedorView WHERE claveprovedor=? AND rfc=?', [req.query.productos[i].producto, rfc],
-            (err, result) => {
-                if (err) {
-                    console.groupCollapsed(err);
-                } else {
-                    console.log(req.query.productos[i].producto);
-                }
-            }
-        );
-    };
-
-    console.log(req.query.productos);
-    //console.log(listaCompleta);
-
-    res.send(req.query);
-}) */
 
     //Actualizada
     app.get("/getclavesPuntuales", async (req, res) => {
@@ -1466,44 +892,6 @@ app.post("/insertClaveManualNoRegistrada", async (req, res) => {
     }
 });
 
-/* app.post("/insertarMargenes", (req, res) => {
-
-    const sucursal = req.query.sucursal;
-
-    db.query('TRUNCATE TABLE margenes',
-        (err, result) => {
-            if (err) {
-                return res.send(err)
-                console.log(err)
-            }
-        }
-    );
-
-    console.log(req.body);
-
-    req.body.map(element => {
-        console.log(element);
-
-        const familia = element.familia;
-        const margen = element.margen;
-        const sucursal = element.sucursal;
-
-
-
-        db.query('INSERT INTO margenes(familia,margen,sucursal) values(?,?,?)', [familia, margen, sucursal],
-            (err, result) => {
-                if (err) {
-                    return res.send(err)
-                    console.log(err)
-                }
-            }
-        );
-
-    });
-    console.log("Insertado correctamente");
-    return res.send("INSERTED");
-}) */
-
 //Actualizada
 app.post("/insertarMargenes", async (req, res) => {
     console.log("Iniciando proceso de actualización de márgenes...");
@@ -1548,22 +936,6 @@ app.post("/insertarMargenes", async (req, res) => {
         connection.release();
     }
 });
-
-/* app.get("/getmargen", (req, res) => {
-    console.log(req.query)
-    const familia = req.query.familia;
-    const sucursal = req.query.sucursal;
-    db.query('SELECT margen FROM margenes WHERE familia=? AND sucursal=?', [familia, sucursal],
-        (err, result) => {
-            if (err) {
-                console.groupCollapsed(err);
-            } else {
-                res.send(result);
-                //console.log(result);
-            }
-        }
-    );
-}) */
 
 //Actualizada
 app.get("/getmargen", async (req, res) => {
@@ -1632,19 +1004,6 @@ app.get("/getfamilias", async (req, res) => {
         ); */
 })
 
-/* app.get("/margenes", (req, res) => {
-
-    db.query('SELECT * FROM margenes',
-        (err, result) => {
-            if (err) {
-                console.groupCollapsed(err);
-            } else {
-                res.send(result);
-            }
-        }
-    );
-}) */
-
 //Actualizada
 app.get("/margenes", async (req, res) => {
     //console.log("Obteniendo todos los márgenes...");
@@ -1669,19 +1028,6 @@ app.get("/margenes", async (req, res) => {
     }
 });
 
-/* app.get("/getSolSiembra", (req, res) => {
-
-    db.query('SELECT cantidad, clave, observaciones, sucursal, fecha FROM faltantesview ORDER BY fecha',
-        (err, result) => {
-            if (err) {
-                console.groupCollapsed(err);
-            } else {
-                res.send(result);
-            }
-        }
-    );
-}) */
-
 //Actualizada
 app.get("/getSolSiembra", async (req, res) => {
     try {
@@ -1695,32 +1041,6 @@ app.get("/getSolSiembra", async (req, res) => {
     }
 });
 
-/* app.get("/gethistoricosmelate", (req, res) => {
-
-    db.query('SELECT id, n1, n2, n3, n4, n5, n6, adicional FROM Melate ORDER BY id',
-        (err, result) => {
-            if (err) {
-                console.groupCollapsed(err);
-            } else {
-                res.send(result);
-            }
-        }
-    );
-}) */
-
-/* app.get("/getpreciosall", (req, res) => {
-
-    db.query('SELECT clave, precio, precioIVA, sucursal FROM preciosView ORDER BY clave',
-        (err, result) => {
-            if (err) {
-                console.groupCollapsed(err);
-            } else {
-                res.send(result);
-            }
-        }
-    );
-}) */
-
 //Actualiza
 app.get("/getpreciosall", async (req, res) => {
     try {
@@ -1733,20 +1053,6 @@ app.get("/getpreciosall", async (req, res) => {
         res.status(500).json({ error: "Error al obtener todos los precios", details: err.message });
     }
 });
-
-/* app.get("/getprecios", (req, res) => {
-    const sucursal = req.query.sucursal;
-    db.query('SELECT clave, precio, precioIVA FROM preciosView WHERE sucursal=? ORDER BY clave', [sucursal],
-        (err, result) => {
-            if (err) {
-                console.groupCollapsed(err);
-            } else {
-                res.send(result);
-                //console.log(result);
-            }
-        }
-    );
-}) */
 
 //Actualiza
 app.get("/getprecios", async (req, res) => {
