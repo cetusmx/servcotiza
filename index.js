@@ -23,7 +23,7 @@ app.use(express.json({
     extended: true
 }))
 
-app.use('/', catalogRoutes);
+app.use('/compras', catalogRoutes);
 
 //Actualizada
 app.post("/insertClaveManualNoRegistrada", async (req, res) => {
