@@ -2,7 +2,7 @@ require('dotenv').config();
 const express = require("express");
 const app = express();
 const mysql = require("mysql2/promise");
-//const cors = require("cors");   //comentar en PRODUCCION
+const cors = require("cors");   //comentar en PRODUCCION
 //import { insertarLista } from "./database.js";
 var bodyParser = require('body-parser');
 const pool = require('./db');
@@ -10,11 +10,11 @@ const pool = require('./db');
 const catalogRoutes = require('./routes/catalogRoutes');
 
 // CONFIGURACIÓN DE CORS --- COMENTAR EN PRODUCCION
-/* app.use(cors({
+app.use(cors({
     origin: "http://localhost:3000", // Permite solo a tu frontend
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true
-})); */
+}));
 // FIN DE COMENTAR EN PRODUCCION
 
 app.use(express.json({
@@ -723,7 +723,7 @@ app.post("/insertClaveManualNoRegistrada", async (req, res) => {
     try {
         // Consultamos exactamente tu tabla 'ProductoContados' con sus campos originales
         const [rows] = await pool.query(
-            'SELECT Clave, Descripcion, Unidad, Existencia, Observaciones FROM ProductoContados WHERE InventarioID=? and Auditor=?', 
+            'SELECT Clave, Descripcion, Unidad, Existencia, Observaciones, Caja FROM ProductoContados WHERE InventarioID=? and Auditor=?', 
             [InventarioID, auditor]
         );
 
@@ -760,7 +760,7 @@ app.post("/insertClaveManualNoRegistrada", async (req, res) => {
     try {
         // Consultamos la tabla ProductoContados con los campos originales
         const [rows] = await pool.query(
-            'SELECT Clave, Descripcion, Unidad, Existencia, Observaciones FROM ProductoContados WHERE InventarioID=? and Auditor=? and Linea=?', 
+            'SELECT Clave, Descripcion, Unidad, Existencia, Observaciones, Caja FROM ProductoContados WHERE InventarioID=? and Auditor=? and Linea=?', 
             [InventarioID, auditor, Linea]
         );
 
