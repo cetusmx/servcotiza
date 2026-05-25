@@ -709,7 +709,7 @@ app.post("/insertClaveManualNoRegistrada", async (req, res) => {
     app.get("/getproductoscontadosporauditoreinv", async (req, res) => {
     // Respetamos tus nombres de variables y parámetros de query
     const InventarioID = req.query.InventarioID;
-    const auditor = req.query.Auditor;
+    const auditor = req.query.auditor;
 
     console.log("Dentro getproductoscontadosporauditoreinv ", InventarioID, "-", auditor);
 
