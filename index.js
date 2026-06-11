@@ -1,5 +1,6 @@
 require('dotenv').config();
 const express = require("express");
+const morgan = require('morgan');
 const app = express();
 const mysql = require("mysql2/promise");
 const cors = require("cors");   //comentar en PRODUCCION
@@ -8,6 +9,7 @@ var bodyParser = require('body-parser');
 const pool = require('./db');
 
 const catalogRoutes = require('./routes/catalogRoutes');
+const dashboardRoutes = require('./routes/dashboardRoutes');
 
 // CONFIGURACIÓN DE CORS --- COMENTAR EN PRODUCCION
 app.use(cors({
@@ -23,7 +25,10 @@ app.use(express.json({
     extended: true
 }))
 
+app.use(morgan('dev'));
+
 app.use('/compras', catalogRoutes);
+app.use('/dashboard', dashboardRoutes);
 
 //Actualizada
 app.post("/insertClaveManualNoRegistrada", async (req, res) => {

@@ -42,4 +42,17 @@ const getAlmacenes = async () => {
     }
 };
 
-module.exports = { getClavesProveedor, getClaveUnitaria, getAlmacenes };
+const getAsertividadCiclica = async (refer, productos) => {
+    try {
+        const response = await firebirdApi.post('/api/dashboard-inventarios/asertividad-ciclico', {
+            refer,
+            productos
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Error en firebirdService (getAsertividadCiclica):", error.message);
+        throw error;
+    }
+};
+
+module.exports = { getClavesProveedor, getClaveUnitaria, getAlmacenes, getAsertividadCiclica };
