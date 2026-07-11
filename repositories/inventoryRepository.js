@@ -17,6 +17,24 @@ const getContadosByInventario = async (inventarioId) => {
     }
 };
 
+const getLineasConTimestamp = async (inventarioId) => {
+    try {
+        const [rows] = await pool.query(
+            `SELECT Linea, createdAt, COUNT(*) AS productos
+             FROM ProductoContados
+             WHERE InventarioID = ?
+             GROUP BY Linea, createdAt
+             ORDER BY createdAt`,
+            [inventarioId]
+        );
+        return rows;
+    } catch (error) {
+        console.error("Error en inventoryRepository.getLineasConTimestamp:", error);
+        throw error;
+    }
+};
+
 module.exports = {
-    getContadosByInventario
+    getContadosByInventario,
+    getLineasConTimestamp
 };
