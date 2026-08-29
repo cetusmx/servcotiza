@@ -8,70 +8,69 @@ const firebirdService = require('../services/firebirdService');
 const getAsertividadCiclica = async (inventarioId, localInventarioId) => {
     localInventarioId = localInventarioId || inventarioId;
 
-    console.log('\n🔍 [ORQUESTADOR] =========================================');
-    console.log(`🔍 [ORQUESTADOR] Iniciando proceso para InventarioID: "${inventarioId}"`);
-    if (localInventarioId !== inventarioId) {
-        console.log(`🔍 [ORQUESTADOR] Usando ID local: "${localInventarioId}"`);
-    }
-
     // 1. Obtener productos contados localmente para ese inventario
-    console.log('⏳ [ORQUESTADOR] Paso 1: Consultando Base de Datos Local (MySQL)...');
     const productosLocales = await inventoryRepo.getContadosByInventario(localInventarioId);
-    
-    console.log(`📦 [ORQUESTADOR] Paso 1 Resultado: ${productosLocales.length} productos locales encontrados.`);
-    if (productosLocales.length > 0) {
-        console.log('   Ejemplo Local:', productosLocales.slice(0, 2));
-    }
 
     if (productosLocales.length === 0) {
-        console.warn('⛔ [ORQUESTADOR] ¡ALERTA! No hay productos locales. Abortando y devolviendo [].');
-        console.warn('   👉 Revisa si el InventarioID en MySQL coincide exactamente con "062026-1"');
         return [];
     }
 
-    // 2. Extraer solo las claves para la API externa (Agregamos .trim() por seguridad)
+    // 2. Extraer solo las claves para la API externa
     const claves = productosLocales.map(p => (p.Clave || '').trim());
-    console.log(`🔑 [ORQUESTADOR] Paso 2: ${claves.length} claves listas para enviar a Firebird.`);
 
     // 3. Consultar API externa (Firebird)
-    console.log('🚀 [ORQUESTADOR] Paso 3: Llamando a API Firebird (esto puede tardar ~40s)...');
     let dataExterna = [];
     try {
         dataExterna = await firebirdService.getAsertividadCiclica(inventarioId, claves);
-        console.log(`🔥 [ORQUESTADOR] Paso 3 Resultado: Firebird devolvió ${dataExterna ? dataExterna.length : 0} registros.`);
-        if (dataExterna && dataExterna.length > 0) {
-            console.log('   Ejemplo Firebird:', dataExterna.slice(0, 2));
-        }
     } catch (error) {
-        console.error('❌ [ORQUESTADOR] ¡ERROR CRÍTICO llamando a Firebird!', error.message);
-        console.error('   👉 Posible Timeout de Axios. Firebird tardó 44s en responder.');
-        return []; // Devolvemos vacío si la API externa falla
+        dataExterna = []; // Si Firebird falla, continuamos con el universo local (sin asertivididad)
     }
 
-    if (!dataExterna || dataExterna.length === 0) {
-        console.warn('⛔ [ORQUESTADOR] ¡ALERTA! Firebird no devolvió datos.');
-        return [];
+    console.log('📋 [ASERTIVIDAD] Primeros 10 productos CRUDOS de Firebird (sin procesar):');
+    console.log(JSON.stringify(dataExterna.slice(0, 10), null, 2));
+
+    // 3.5. Obtener el almacén del inventario (tabla Inventarios) y luego la rotación
+    const almacenRaw = await inventoryRepo.getAlmacenByInventario(localInventarioId);
+    const almacen = almacenRaw != null ? String(almacenRaw).trim() : '';
+
+    let rotaciones = {};
+    if (almacen) {
+        try {
+            rotaciones = await inventoryRepo.getRotacionesByClaveAlmacen(claves, [almacen]);
+        } catch (error) {
+            // Si falla la consulta de rotación, continuamos sin ese campo
+        }
     }
 
-    // 4. Combinar la información
-    console.log('🔗 [ORQUESTADOR] Paso 4: Cruzando datos locales con Firebird...');
-    const resultadoCombinado = dataExterna.map(itemExterno => {
-        // 🔧 CORRECCIÓN: Usamos .trim() en ambos lados para evitar que los espacios 
-        // de MySQL (CHAR) rompan el match con Firebird (ya limpio).
-        const local = productosLocales.find(p => (p.Clave || '').trim() === (itemExterno.CVE_ART || '').trim());
+    // 4. Combinar la información recorriendo TODO el universo del inventario
+    // (productosLocales) para que ROTACION se agregue a cada producto,
+    // independientemente de si Firebird devolvió movimiento (REFER).
+    const firebirdPorClave = {};
+    for (const item of dataExterna) {
+        firebirdPorClave[(item.CVE_ART || '').trim()] = item;
+    }
+
+    const resultadoCombinado = productosLocales.map(local => {
+        const clave = (local.Clave || '').trim();
+        const fb = firebirdPorClave[clave];
+
+        const rotacionKey = `${clave}|${almacen}`;
 
         return {
-            ...itemExterno,
-            CANT_CONTADA: local ? local.Existencia : 0, 
-            DESCRIPCION_LOCAL: local ? local.Descripcion : '',
-            UNIDAD_LOCAL: local ? local.Unidad : '',
-            AUDITOR: local ? local.Auditor : 'N/A',
-            LINEA: local ? local.Linea : 'N/A'
+            ...(fb || {}),
+            CVE_ART: clave,
+            CANT_CONTADA: local.Existencia,
+            DESCRIPCION_LOCAL: local.Descripcion,
+            UNIDAD_LOCAL: local.Unidad,
+            AUDITOR: local.Auditor || 'N/A',
+            LINEA: local.Linea || 'N/A',
+            ROTACION: rotaciones[rotacionKey] ?? null
         };
     });
 
-    console.log(`✅ [ORQUESTADOR] ¡ÉXITO! Enviando ${resultadoCombinado.length} registros al Frontend.`);
-    console.log('==========================================================\n');
+    console.log(`📊 [ASERTIVIDAD] Total de registros devueltos: ${resultadoCombinado.length}`);
+    console.log('📋 [ASERTIVIDAD] Primeros 10 productos devueltos por el endpoint:');
+    console.log(JSON.stringify(resultadoCombinado.slice(0, 10), null, 2));
     
     return resultadoCombinado;
 };
@@ -120,16 +119,11 @@ const calcularHorasActivas = (inicio, fin) => {
 };
 
 const getSkuPorHora = async (inventarioId) => {
-    console.log(`\n📊 [SKU/hr] Iniciando para InventarioID: "${inventarioId}"`);
-
     const lineas = await inventoryRepo.getLineasConTimestamp(inventarioId);
 
     if (!lineas || lineas.length === 0) {
-        console.warn('⛔ [SKU/hr] No se encontraron líneas para este inventario.');
         return [];
     }
-
-    console.log(`📦 [SKU/hr] ${lineas.length} líneas encontradas.`);
 
     const HORA_MS = 3600000;
     const detalle = [];

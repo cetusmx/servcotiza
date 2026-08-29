@@ -3,7 +3,7 @@ const express = require("express");
 const morgan = require('morgan');
 const app = express();
 const mysql = require("mysql2/promise");
-//const cors = require("cors");   //comentar en PRODUCCION
+const cors = require("cors");   //comentar en PRODUCCION
 //import { insertarLista } from "./database.js";
 var bodyParser = require('body-parser');
 const pool = require('./db');
@@ -12,11 +12,11 @@ const catalogRoutes = require('./routes/catalogRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
 
 // CONFIGURACIÓN DE CORS --- COMENTAR EN PRODUCCION
-/* app.use(cors({
+app.use(cors({
     origin: "http://localhost:3000", // Permite solo a tu frontend
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true
-})); */
+}));
 // FIN DE COMENTAR EN PRODUCCION
 
 app.use(express.json({
@@ -25,7 +25,7 @@ app.use(express.json({
     extended: true
 }))
 
-app.use(morgan('dev'));
+app.use(morgan(':date[iso] :method :url :status :response-time ms - :res[content-length]'));
 
 app.use('/compras', catalogRoutes);
 app.use('/dashboard', dashboardRoutes);
