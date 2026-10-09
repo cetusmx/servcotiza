@@ -55,4 +55,17 @@ const getAsertividadCiclica = async (refer, productos) => {
     }
 };
 
-module.exports = { getClavesProveedor, getClaveUnitaria, getAlmacenes, getAsertividadCiclica };
+const getProductosRecepcion = async (rfc, claves_proveedor) => {
+    try {
+        const response = await firebirdApi.post('/api/productos-recepcion', {
+            rfc,
+            claves_proveedor
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Error en firebirdService (getProductosRecepcion):", error.message);
+        throw error;
+    }
+};
+
+module.exports = { getClavesProveedor, getClaveUnitaria, getAlmacenes, getAsertividadCiclica, getProductosRecepcion };
