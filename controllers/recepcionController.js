@@ -1,5 +1,10 @@
 const { getProductosRecepcion: fetchProductosRecepcion } = require('../services/firebirdService');
+const recepcionService = require('../services/recepcionService');
 
+/**
+ * Proxy puente hacia Firebird para consultar equivalencias de claves
+ * POST /recepcion/productos o /api/v1/recepcion/productos
+ */
 const getProductosRecepcion = async (req, res) => {
     try {
         const { rfc, claves_proveedor } = req.body;
@@ -10,14 +15,10 @@ const getProductosRecepcion = async (req, res) => {
             });
         }
 
-        // Llamada al servicio que se conecta con la API externa de Firebird
         const data = await fetchProductosRecepcion(rfc, claves_proveedor);
-        
-        // Devolvemos la salida tal cual (como puente)
         res.status(200).json(data);
     } catch (error) {
         console.error("Error en getProductosRecepcion (Controller):", error);
-        // Si el error viene de axios (de la API externa)
         if (error.response) {
             return res.status(error.response.status).json(error.response.data);
         }
@@ -28,6 +29,176 @@ const getProductosRecepcion = async (req, res) => {
     }
 };
 
+/**
+ * POST /api/v1/recepcion/crear
+ * Sube datos de la factura XML, crea la cabecera y desglosa partidas asignando sucursal destino.
+ */
+const crearRecepcion = async (req, res) => {
+    try {
+        const resultado = await recepcionService.crearRecepcion(req.body);
+        res.status(201).json({
+            success: true,
+            message: "Recepción creada exitosamente",
+            data: resultado
+        });
+    } catch (error) {
+        console.error("Error en recepcionController.crearRecepcion:", error);
+        res.status(400).json({
+            error: "Error al registrar la recepción",
+            details: error.message
+        });
+    }
+};
+
+/**
+ * GET /api/v1/recepcion/pendientes?sucursal=X
+ * Lista las facturas que esa sucursal tiene pendientes por recibir.
+ */
+const getPendientes = async (req, res) => {
+    try {
+        const { sucursal } = req.query;
+        const facturas = await recepcionService.getPendientes(sucursal);
+        res.status(200).json(facturas);
+    } catch (error) {
+        console.error("Error en recepcionController.getPendientes:", error);
+        res.status(500).json({
+            error: "Error interno al consultar recepciones pendientes",
+            details: error.message
+        });
+    }
+};
+
+/**
+ * GET /api/v1/recepcion/:id/detalle
+ * Trae la factura completa con todas sus partidas para escanear o revisar incidencias.
+ */
+const getDetalle = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { iniciar } = req.query; // Permite pasar ?iniciar=true para cambiar a EN_RECEPCION
+
+        const detalle = await recepcionService.getDetalle(id, iniciar === 'true');
+        if (!detalle) {
+            return res.status(404).json({
+                error: `No se encontró la recepción con ID ${id}`
+            });
+        }
+
+        res.status(200).json(detalle);
+    } catch (error) {
+        console.error("Error en recepcionController.getDetalle:", error);
+        res.status(500).json({
+            error: "Error interno al consultar el detalle de la recepción",
+            details: error.message
+        });
+    }
+};
+
+/**
+ * POST /api/v1/recepcion/:id/finalizar
+ * Envía el conteo real, observaciones y cambia el estatus a RECIBIDO_COMPLETO o RECIBIDO_CON_INCIDENCIA.
+ */
+const finalizarRecepcion = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { recibido_por, observaciones_generales, partidas } = req.body;
+
+        const resultado = await recepcionService.finalizarRecepcion(id, {
+            recibido_por,
+            observaciones_generales,
+            partidas
+        });
+
+        res.status(200).json({
+            success: true,
+            message: "Recepción finalizada con éxito",
+            data: resultado
+        });
+    } catch (error) {
+        console.error("Error en recepcionController.finalizarRecepcion:", error);
+        res.status(400).json({
+            error: "Error al finalizar la recepción",
+            details: error.message
+        });
+    }
+};
+
+/**
+ * GET /api/v1/recepcion/monitoreo-compras
+ * Lista todas las facturas con su estado para saber a cuáles ya se les puede generar OC.
+ */
+const getMonitoreoCompras = async (req, res) => {
+    try {
+        const filtros = {
+            sucursal: req.query.sucursal,
+            estatus: req.query.estatus,
+            rfc: req.query.rfc
+        };
+
+        const facturas = await recepcionService.getMonitoreoCompras(filtros);
+        res.status(200).json(facturas);
+    } catch (error) {
+        console.error("Error en recepcionController.getMonitoreoCompras:", error);
+        res.status(500).json({
+            error: "Error interno al consultar el monitoreo de compras",
+            details: error.message
+        });
+    }
+};
+
+/**
+ * PUT /api/v1/recepcion/:id/cerrar-oc
+ * Marca la factura como OC_GENERADA una vez descargado el archivo .MOD.
+ */
+const cerrarOC = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const resultado = await recepcionService.cerrarOC(id);
+        res.status(200).json({
+            success: true,
+            message: "Factura cerrada y marcada como OC_GENERADA exitosamente",
+            data: resultado
+        });
+    } catch (error) {
+        console.error("Error en recepcionController.cerrarOC:", error);
+        res.status(400).json({
+            error: "Error al cerrar la recepción",
+            details: error.message
+        });
+    }
+};
+
+/**
+ * PUT /api/v1/recepcion/:id/progreso
+ * Guarda el progreso parcial de las partidas recibidas y pendientes.
+ */
+const guardarProgreso = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { partidas } = req.body;
+
+        const resultado = await recepcionService.guardarProgreso(id, { partidas });
+        res.status(200).json({
+            success: true,
+            message: "Progreso guardado exitosamente",
+            data: resultado
+        });
+    } catch (error) {
+        console.error("Error en recepcionController.guardarProgreso:", error);
+        res.status(400).json({
+            error: "Error al guardar progreso de la recepción",
+            details: error.message
+        });
+    }
+};
+
 module.exports = {
-    getProductosRecepcion
+    getProductosRecepcion,
+    crearRecepcion,
+    getPendientes,
+    getDetalle,
+    finalizarRecepcion,
+    getMonitoreoCompras,
+    cerrarOC,
+    guardarProgreso
 };

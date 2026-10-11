@@ -31,6 +31,7 @@ app.use(morgan(':date[iso] :method :url :status :response-time ms - :res[content
 app.use('/compras', catalogRoutes);
 app.use('/dashboard', dashboardRoutes);
 app.use('/recepcion', recepcionRoutes);
+app.use('/api/v1/recepcion', recepcionRoutes);
 
 //Actualizada
 app.post("/insertClaveManualNoRegistrada", async (req, res) => {
