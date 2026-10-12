@@ -124,7 +124,16 @@ const finalizarRecepcion = async (id, { recibido_por, observaciones_generales, p
         if (!estatus) {
             const facturada = Number(p.cantidad_facturada || 0);
             const recibida = Number(p.cantidad_recibida || 0);
-            if (recibida === facturada) {
+            const obs = p.observacion || '';
+            if (obs.includes('[Incorrecto]')) {
+                estatus = 'INCORRECTO';
+            } else if (obs.includes('[Dañado]')) {
+                estatus = 'DANADA';
+            } else if (obs.includes('[Faltante]')) {
+                estatus = 'INCOMPLETA';
+            } else if (obs.includes('[Otra]')) {
+                estatus = 'OTRA';
+            } else if (recibida === facturada) {
                 estatus = 'COMPLETA';
             } else if (recibida === 0) {
                 estatus = 'NO_RECIBIDA';

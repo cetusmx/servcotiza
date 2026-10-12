@@ -206,7 +206,7 @@ const finalizarRecepcion = async (id, { recibido_por, observaciones_generales, p
 
         // 3. Consultar todas las partidas de la recepción para calcular totales precisos
         const [todasPartidas] = await connection.query(
-            `SELECT cantidad_facturada, cantidad_recibida, estatus_partida FROM recepciones_facturas_partidas WHERE recepcion_id = ?`,
+            `SELECT cantidad_facturada, cantidad_recibida, estatus_partida, observacion FROM recepciones_facturas_partidas WHERE recepcion_id = ?`,
             [id]
         );
 
@@ -222,12 +222,13 @@ const finalizarRecepcion = async (id, { recibido_por, observaciones_generales, p
             const recibida = Number(item.cantidad_recibida || 0);
             totalRecibidas += recibida;
 
+            const tieneObs = Boolean(item.observacion && item.observacion.trim() !== '');
+            const esAnomalia = Boolean(item.estatus_partida && !['PENDIENTE', 'COMPLETA'].includes(item.estatus_partida));
+
             if (
                 facturada !== recibida ||
-                item.estatus_partida === 'INCOMPLETA' ||
-                item.estatus_partida === 'DANADA' ||
-                item.estatus_partida === 'NO_RECIBIDA' ||
-                (item.observacion && item.observacion.trim() !== '')
+                esAnomalia ||
+                tieneObs
             ) {
                 tieneIncidencias = 1;
             }
