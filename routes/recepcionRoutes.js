@@ -14,6 +14,9 @@ router.get('/pendientes', recepcionController.getPendientes);
 // 4. Comprador: Monitoreo global de facturas y estatus
 router.get('/monitoreo-compras', recepcionController.getMonitoreoCompras);
 
+// 4.1 Comprador: Valida si una factura ya fue registrada (evitar duplicados)
+router.get('/validar-existente', recepcionController.validarExistente);
+
 // 5. Ambos: Detalle completo de la factura y partidas
 router.get('/:id/detalle', recepcionController.getDetalle);
 

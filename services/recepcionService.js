@@ -28,6 +28,25 @@ const crearRecepcion = async (data) => {
         throw new Error("La recepción debe contener al menos una partida en el arreglo 'partidas'.");
     }
 
+    // 1. Validar que la factura no esté previamente registrada (evitar duplicados)
+    const existente = await recepcionRepository.findFacturaExistente({
+        uuid_sat,
+        folio_factura,
+        rfc_proveedor
+    });
+
+    if (existente) {
+        const coincidenciaPor = (uuid_sat && existente.uuid_sat && existente.uuid_sat.trim().toLowerCase() === uuid_sat.trim().toLowerCase())
+            ? `el UUID SAT (${uuid_sat})`
+            : `el Folio (${folio_factura}) y RFC del proveedor (${rfc_proveedor})`;
+
+        const fechaFormateada = existente.fecha_subida ? new Date(existente.fecha_subida).toLocaleDateString() : '';
+        const error = new Error(`La factura ya está registrada en el sistema con ${coincidenciaPor}. Sucursal destino: ${existente.sucursal_destino}, Estatus: ${existente.estatus}${fechaFormateada ? `, Fecha: ${fechaFormateada}` : ''}.`);
+        error.statusCode = 409;
+        error.facturaExistente = existente;
+        throw error;
+    }
+
     // Fallback: Si no vienen receptor o rfc_receptor, intentar extraerlos del XML original
     let finalNombreReceptor = nombre_receptor || null;
     let finalRfcReceptor = rfc_receptor || null;
@@ -179,8 +198,20 @@ const guardarProgreso = async (id, { partidas }) => {
     return await recepcionRepository.guardarProgresoRecepcion(id, { partidas });
 };
 
+/**
+ * Valida si una factura ya existe en el sistema.
+ */
+const validarExistente = async ({ uuid_sat, folio_factura, rfc_proveedor }) => {
+    return await recepcionRepository.findFacturaExistente({
+        uuid_sat,
+        folio_factura,
+        rfc_proveedor
+    });
+};
+
 module.exports = {
     crearRecepcion,
+    validarExistente,
     getPendientes,
     getDetalle,
     finalizarRecepcion,

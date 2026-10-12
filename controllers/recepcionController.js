@@ -43,9 +43,17 @@ const crearRecepcion = async (req, res) => {
         });
     } catch (error) {
         console.error("Error en recepcionController.crearRecepcion:", error);
-        res.status(400).json({
-            error: "Error al registrar la recepción",
-            details: error.message
+        if (error.code === 'ER_DUP_ENTRY') {
+            return res.status(409).json({
+                error: "Factura ya registrada",
+                details: "Esta factura ya se encuentra registrada en el sistema."
+            });
+        }
+        const statusCode = error.statusCode || 400;
+        res.status(statusCode).json({
+            error: statusCode === 409 ? "Factura ya registrada" : "Error al registrar la recepción",
+            details: error.message,
+            facturaExistente: error.facturaExistente || null
         });
     }
 };
@@ -192,9 +200,35 @@ const guardarProgreso = async (req, res) => {
     }
 };
 
+/**
+ * GET /api/v1/recepcion/validar-existente?uuid=X&folio=Y&rfc=Z
+ * Valida si una factura ya fue registrada en el sistema.
+ */
+const validarExistente = async (req, res) => {
+    try {
+        const { uuid, folio, rfc } = req.query;
+        if (!folio && !uuid) {
+            return res.status(400).json({ error: "Debe proveer 'uuid' o 'folio' y 'rfc' para validar." });
+        }
+        const existente = await recepcionService.validarExistente({
+            uuid_sat: uuid,
+            folio_factura: folio,
+            rfc_proveedor: rfc
+        });
+        res.status(200).json({
+            existe: Boolean(existente),
+            factura: existente || null
+        });
+    } catch (error) {
+        console.error("Error en recepcionController.validarExistente:", error);
+        res.status(500).json({ error: "Error al validar existencia de la factura", details: error.message });
+    }
+};
+
 module.exports = {
     getProductosRecepcion,
     crearRecepcion,
+    validarExistente,
     getPendientes,
     getDetalle,
     finalizarRecepcion,

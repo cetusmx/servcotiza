@@ -386,8 +386,48 @@ const guardarProgresoRecepcion = async (id, { partidas }) => {
     }
 };
 
+/**
+ * Busca si ya existe una factura activa o registrada por UUID del SAT o combinación de Folio y RFC.
+ */
+const findFacturaExistente = async ({ uuid_sat, folio_factura, rfc_proveedor }) => {
+    try {
+        const conditions = [];
+        const params = [];
+
+        if (uuid_sat && uuid_sat.trim() !== '') {
+            conditions.push(`LOWER(TRIM(uuid_sat)) = LOWER(TRIM(?))`);
+            params.push(uuid_sat.trim());
+        }
+
+        if (folio_factura && folio_factura.trim() !== '' && rfc_proveedor && rfc_proveedor.trim() !== '') {
+            conditions.push(`(LOWER(TRIM(folio_factura)) = LOWER(TRIM(?)) AND LOWER(TRIM(rfc_proveedor)) = LOWER(TRIM(?)))`);
+            params.push(folio_factura.trim(), rfc_proveedor.trim());
+        }
+
+        if (conditions.length === 0) {
+            return null;
+        }
+
+        const sql = `
+            SELECT id, folio_factura, uuid_sat, rfc_proveedor, nombre_proveedor,
+                   sucursal_destino, almacen_sae, estatus, fecha_subida, subido_por
+            FROM recepciones_facturas
+            WHERE estatus != 'CANCELADO'
+              AND (${conditions.join(' OR ')})
+            LIMIT 1
+        `;
+
+        const [rows] = await pool.query(sql, params);
+        return rows.length > 0 ? rows[0] : null;
+    } catch (error) {
+        console.error("Error en recepcionRepository.findFacturaExistente:", error);
+        throw error;
+    }
+};
+
 module.exports = {
     createRecepcion,
+    findFacturaExistente,
     getPendientesBySucursal,
     getRecepcionDetalleById,
     marcarEnRecepcion,
