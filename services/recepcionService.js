@@ -209,9 +209,26 @@ const validarExistente = async ({ uuid_sat, folio_factura, rfc_proveedor }) => {
     });
 };
 
+/**
+ * Elimina una recepción física y sus partidas asociadas.
+ */
+const eliminarRecepcion = async (id) => {
+    if (!id) {
+        throw new Error("El ID de la recepción es requerido.");
+    }
+    const facturaEliminada = await recepcionRepository.deleteRecepcion(id);
+    if (!facturaEliminada) {
+        const error = new Error(`No se encontró la recepción con ID ${id}.`);
+        error.statusCode = 404;
+        throw error;
+    }
+    return facturaEliminada;
+};
+
 module.exports = {
     crearRecepcion,
     validarExistente,
+    eliminarRecepcion,
     getPendientes,
     getDetalle,
     finalizarRecepcion,

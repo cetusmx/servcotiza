@@ -29,4 +29,7 @@ router.post('/:id/finalizar', recepcionController.finalizarRecepcion);
 // 8. Comprador: Cierra la factura tras descargar el archivo .MOD
 router.put('/:id/cerrar-oc', recepcionController.cerrarOC);
 
+// 9. Comprador: Elimina factura y partidas asociadas (por error de asignación o subida)
+router.delete('/:id', recepcionController.eliminarRecepcion);
+
 module.exports = router;

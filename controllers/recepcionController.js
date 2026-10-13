@@ -225,10 +225,34 @@ const validarExistente = async (req, res) => {
     }
 };
 
+/**
+ * DELETE /api/v1/recepcion/:id
+ * Elimina una recepción física y sus partidas (por error de asignación o subida).
+ */
+const eliminarRecepcion = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const resultado = await recepcionService.eliminarRecepcion(id);
+        res.status(200).json({
+            success: true,
+            message: `Factura ${resultado.folio_factura} eliminada exitosamente`,
+            data: resultado
+        });
+    } catch (error) {
+        console.error("Error en recepcionController.eliminarRecepcion:", error);
+        const statusCode = error.statusCode || 500;
+        res.status(statusCode).json({
+            error: "Error al eliminar la recepción",
+            details: error.message
+        });
+    }
+};
+
 module.exports = {
     getProductosRecepcion,
     crearRecepcion,
     validarExistente,
+    eliminarRecepcion,
     getPendientes,
     getDetalle,
     finalizarRecepcion,

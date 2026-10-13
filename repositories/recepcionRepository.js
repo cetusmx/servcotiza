@@ -425,9 +425,47 @@ const findFacturaExistente = async ({ uuid_sat, folio_factura, rfc_proveedor }) 
     }
 };
 
+/**
+ * Elimina una recepción física y todas sus partidas asociadas.
+ */
+const deleteRecepcion = async (id) => {
+    const connection = await pool.getConnection();
+    try {
+        await connection.beginTransaction();
+
+        const [rows] = await connection.query(
+            'SELECT id, folio_factura, uuid_sat, rfc_proveedor, nombre_proveedor, sucursal_destino, estatus FROM recepciones_facturas WHERE id = ?',
+            [id]
+        );
+
+        if (rows.length === 0) {
+            await connection.rollback();
+            return null;
+        }
+
+        const factura = rows[0];
+
+        // Eliminar partidas asociadas
+        await connection.query('DELETE FROM recepciones_facturas_partidas WHERE recepcion_id = ?', [id]);
+
+        // Eliminar cabecera
+        await connection.query('DELETE FROM recepciones_facturas WHERE id = ?', [id]);
+
+        await connection.commit();
+        return factura;
+    } catch (error) {
+        await connection.rollback();
+        console.error("Error en recepcionRepository.deleteRecepcion:", error);
+        throw error;
+    } finally {
+        connection.release();
+    }
+};
+
 module.exports = {
     createRecepcion,
     findFacturaExistente,
+    deleteRecepcion,
     getPendientesBySucursal,
     getRecepcionDetalleById,
     marcarEnRecepcion,
