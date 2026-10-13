@@ -445,6 +445,13 @@ const deleteRecepcion = async (id) => {
 
         const factura = rows[0];
 
+        if (String(factura.estatus || '').toUpperCase() === 'OC_GENERADA') {
+            await connection.rollback();
+            const err = new Error(`No es posible eliminar la factura ${factura.folio_factura} porque ya cuenta con Orden de Compra generada (estatus OC_GENERADA).`);
+            err.statusCode = 400;
+            throw err;
+        }
+
         // Eliminar partidas asociadas
         await connection.query('DELETE FROM recepciones_facturas_partidas WHERE recepcion_id = ?', [id]);
 
