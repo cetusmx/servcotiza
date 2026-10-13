@@ -32,4 +32,18 @@ router.put('/:id/cerrar-oc', recepcionController.cerrarOC);
 // 9. Comprador: Elimina factura y partidas asociadas (por error de asignación o subida)
 router.delete('/:id', recepcionController.eliminarRecepcion);
 
+// 10. Evidencias fotográficas (servir binario y eliminar)
+router.get('/evidencias/:fotoId', recepcionController.getFotoEvidencia);
+router.delete('/evidencias/:fotoId', recepcionController.eliminarFotoEvidencia);
+
+// 11. Evidencias fotográficas por recepción (subir foto individual)
+router.post('/:id/evidencias', recepcionController.subirFotoEvidencia);
+
+// 12. Comprador: Seguimiento y resolución comercial de incidencia
+router.put('/:id/seguimiento-incidencia', recepcionController.actualizarSeguimientoIncidencia);
+
+// 13. Bitácora de seguimiento de incidencias
+router.get('/:id/bitacora', recepcionController.getBitacora);
+router.post('/:id/bitacora', recepcionController.agregarNotaBitacora);
+
 module.exports = router;

@@ -109,12 +109,13 @@ const getDetalle = async (req, res) => {
 const finalizarRecepcion = async (req, res) => {
     try {
         const { id } = req.params;
-        const { recibido_por, observaciones_generales, partidas } = req.body;
+        const { recibido_por, observaciones_generales, partidas, fotos } = req.body;
 
         const resultado = await recepcionService.finalizarRecepcion(id, {
             recibido_por,
             observaciones_generales,
-            partidas
+            partidas,
+            fotos
         });
 
         res.status(200).json({
@@ -248,6 +249,118 @@ const eliminarRecepcion = async (req, res) => {
     }
 };
 
+/**
+ * GET /api/v1/recepcion/evidencias/:fotoId
+ * Transmite el archivo binario de la imagen (blob) con su mimetype correspondiente.
+ */
+const getFotoEvidencia = async (req, res) => {
+    try {
+        const { fotoId } = req.params;
+        const foto = await recepcionService.getFotoBlob(fotoId);
+
+        res.setHeader('Content-Type', foto.mime_type || 'image/jpeg');
+        res.setHeader('Content-Length', foto.foto_blob.length);
+        res.setHeader('Cache-Control', 'public, max-age=86400'); // Cache de 1 día
+        res.end(foto.foto_blob);
+    } catch (error) {
+        console.error("Error en recepcionController.getFotoEvidencia:", error);
+        const statusCode = error.statusCode || 500;
+        res.status(statusCode).json({ error: "Error al obtener foto", details: error.message });
+    }
+};
+
+/**
+ * POST /api/v1/recepcion/:id/evidencias
+ * Sube una foto de evidencia para una recepción o partida.
+ */
+const subirFotoEvidencia = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const resultado = await recepcionService.guardarFotoEvidencia({
+            recepcion_id: id,
+            ...req.body
+        });
+        res.status(201).json({
+            success: true,
+            message: "Foto de evidencia guardada exitosamente",
+            data: resultado
+        });
+    } catch (error) {
+        console.error("Error en recepcionController.subirFotoEvidencia:", error);
+        res.status(400).json({ error: "Error al guardar evidencia", details: error.message });
+    }
+};
+
+/**
+ * DELETE /api/v1/recepcion/evidencias/:fotoId
+ * Elimina una foto de evidencia.
+ */
+const eliminarFotoEvidencia = async (req, res) => {
+    try {
+        const { fotoId } = req.params;
+        const resultado = await recepcionService.deleteFoto(fotoId);
+        res.status(200).json({ success: true, message: "Foto eliminada exitosamente", data: resultado });
+    } catch (error) {
+        console.error("Error en recepcionController.eliminarFotoEvidencia:", error);
+        const statusCode = error.statusCode || 500;
+        res.status(statusCode).json({ error: "Error al eliminar foto", details: error.message });
+    }
+};
+
+/**
+ * PUT /api/v1/recepcion/:id/seguimiento-incidencia
+ * Actualiza el estatus comercial de la incidencia, datos de resolución (NC, reposición) y partidas.
+ */
+const actualizarSeguimientoIncidencia = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const resultado = await recepcionService.actualizarSeguimientoIncidencia(id, req.body);
+        res.status(200).json({
+            success: true,
+            message: "Seguimiento de incidencia actualizado exitosamente",
+            data: resultado
+        });
+    } catch (error) {
+        console.error("Error en recepcionController.actualizarSeguimientoIncidencia:", error);
+        res.status(400).json({ error: "Error al actualizar seguimiento", details: error.message });
+    }
+};
+
+/**
+ * POST /api/v1/recepcion/:id/bitacora
+ * Agrega una nota de seguimiento a la bitácora de la recepción.
+ */
+const agregarNotaBitacora = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { usuario, comentario } = req.body;
+        const resultado = await recepcionService.agregarNotaBitacora(id, { usuario, comentario });
+        res.status(201).json({
+            success: true,
+            message: "Nota agregada a la bitácora",
+            data: resultado
+        });
+    } catch (error) {
+        console.error("Error en recepcionController.agregarNotaBitacora:", error);
+        res.status(400).json({ error: "Error al agregar nota a la bitácora", details: error.message });
+    }
+};
+
+/**
+ * GET /api/v1/recepcion/:id/bitacora
+ * Obtiene la bitácora de seguimiento de una recepción.
+ */
+const getBitacora = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const bitacora = await recepcionService.getBitacora(id);
+        res.status(200).json(bitacora);
+    } catch (error) {
+        console.error("Error en recepcionController.getBitacora:", error);
+        res.status(500).json({ error: "Error al consultar bitácora", details: error.message });
+    }
+};
+
 module.exports = {
     getProductosRecepcion,
     crearRecepcion,
@@ -258,5 +371,11 @@ module.exports = {
     finalizarRecepcion,
     getMonitoreoCompras,
     cerrarOC,
-    guardarProgreso
+    guardarProgreso,
+    getFotoEvidencia,
+    subirFotoEvidencia,
+    eliminarFotoEvidencia,
+    actualizarSeguimientoIncidencia,
+    agregarNotaBitacora,
+    getBitacora
 };

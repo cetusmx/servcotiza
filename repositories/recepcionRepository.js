@@ -136,9 +136,34 @@ const getRecepcionDetalleById = async (id) => {
             [id]
         );
 
+        // Consultar evidencias fotográficas (sin el campo foto_blob para mantener la respuesta ligera)
+        const [evidenciasRows] = await pool.query(
+            `SELECT id, recepcion_id, partida_id, nombre_archivo, mime_type, tamano_bytes, subido_por, fecha_subida 
+             FROM recepciones_evidencias_fotos 
+             WHERE recepcion_id = ? 
+             ORDER BY fecha_subida ASC`,
+            [id]
+        );
+
+        // Consultar bitácora de seguimiento
+        const [bitacoraRows] = await pool.query(
+            `SELECT id, recepcion_id, usuario, comentario, fecha 
+             FROM recepciones_bitacora_seguimiento 
+             WHERE recepcion_id = ? 
+             ORDER BY fecha DESC`,
+            [id]
+        );
+
+        const partidasConFotos = partidasRows.map(p => ({
+            ...p,
+            fotos: evidenciasRows.filter(ev => ev.partida_id === p.id)
+        }));
+
         return {
             ...cabeceraRows[0],
-            partidas: partidasRows
+            partidas: partidasConFotos,
+            evidencias: evidenciasRows,
+            bitacora: bitacoraRows
         };
     } catch (error) {
         console.error("Error en recepcionRepository.getRecepcionDetalleById:", error);
@@ -165,7 +190,7 @@ const marcarEnRecepcion = async (id) => {
 /**
  * Finaliza el conteo físico de la recepción y actualiza partidas y totales.
  */
-const finalizarRecepcion = async (id, { recibido_por, observaciones_generales, partidas }) => {
+const finalizarRecepcion = async (id, { recibido_por, observaciones_generales, partidas, fotos }) => {
     const connection = await pool.getConnection();
     try {
         await connection.beginTransaction();
@@ -235,6 +260,7 @@ const finalizarRecepcion = async (id, { recibido_por, observaciones_generales, p
         }
 
         const nuevoEstatus = tieneIncidencias === 1 ? 'RECIBIDO_CON_INCIDENCIA' : 'RECIBIDO_COMPLETO';
+        const nuevoEstatusIncidencia = tieneIncidencias === 1 ? 'PENDIENTE' : 'SIN_INCIDENCIA';
 
         // 4. Actualizar la cabecera
         await connection.query(
@@ -242,6 +268,7 @@ const finalizarRecepcion = async (id, { recibido_por, observaciones_generales, p
              SET fecha_recepcion = NOW(),
                  recibido_por = ?,
                  estatus = ?,
+                 estatus_incidencia = ?,
                  total_piezas_recibidas = ?,
                  tiene_incidencias = ?,
                  observaciones_generales = COALESCE(?, observaciones_generales)
@@ -249,6 +276,7 @@ const finalizarRecepcion = async (id, { recibido_por, observaciones_generales, p
             [
                 recibido_por || null,
                 nuevoEstatus,
+                nuevoEstatusIncidencia,
                 totalRecibidas,
                 tieneIncidencias,
                 observaciones_generales || null,
@@ -256,11 +284,70 @@ const finalizarRecepcion = async (id, { recibido_por, observaciones_generales, p
             ]
         );
 
+        // 5. Guardar fotos de evidencia de partidas
+        if (partidas && partidas.length > 0) {
+            for (const p of partidas) {
+                if (p.fotos && Array.isArray(p.fotos) && p.fotos.length > 0) {
+                    for (const f of p.fotos) {
+                        if (f.foto_base64) {
+                            const buffer = Buffer.from(f.foto_base64.replace(/^data:image\/\w+;base64,/, ''), 'base64');
+                            await connection.query(
+                                `INSERT INTO recepciones_evidencias_fotos (
+                                    recepcion_id, partida_id, nombre_archivo, mime_type, tamano_bytes, foto_blob, subido_por
+                                ) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+                                [
+                                    id,
+                                    p.id || null,
+                                    f.nombre_archivo || 'evidencia.jpg',
+                                    f.mime_type || 'image/jpeg',
+                                    buffer.length,
+                                    buffer,
+                                    recibido_por || null
+                                ]
+                            );
+                        }
+                    }
+                }
+            }
+        }
+
+        // 6. Guardar fotos generales si existen
+        if (fotos && Array.isArray(fotos) && fotos.length > 0) {
+            for (const f of fotos) {
+                if (f.foto_base64) {
+                    const buffer = Buffer.from(f.foto_base64.replace(/^data:image\/\w+;base64,/, ''), 'base64');
+                    await connection.query(
+                        `INSERT INTO recepciones_evidencias_fotos (
+                            recepcion_id, partida_id, nombre_archivo, mime_type, tamano_bytes, foto_blob, subido_por
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+                        [
+                            id,
+                            f.partida_id || null,
+                            f.nombre_archivo || 'evidencia.jpg',
+                            f.mime_type || 'image/jpeg',
+                            buffer.length,
+                            buffer,
+                            recibido_por || null
+                        ]
+                    );
+                }
+            }
+        }
+
+        // 7. Si hubo incidencias, registrar en la bitácora inicial
+        if (tieneIncidencias === 1) {
+            await connection.query(
+                `INSERT INTO recepciones_bitacora_seguimiento (recepcion_id, usuario, comentario) VALUES (?, ?, ?)`,
+                [id, recibido_por || 'Almacén', `Recepción física finalizada con incidencias reportadas por ${recibido_por || 'Operador de Almacén'}.`]
+            );
+        }
+
         await connection.commit();
 
         return {
             id,
             estatus: nuevoEstatus,
+            estatus_incidencia: nuevoEstatusIncidencia,
             total_piezas_recibidas: totalRecibidas,
             tiene_incidencias: tieneIncidencias
         };
@@ -284,7 +371,9 @@ const getMonitoreoCompras = async (filtros = {}) => {
                    sucursal_destino, almacen_sae, fecha_factura, fecha_subida,
                    subido_por, fecha_recepcion, recibido_por, estatus,
                    total_partidas, total_piezas_facturadas, total_piezas_recibidas,
-                   tiene_incidencias, observaciones_generales
+                   tiene_incidencias, estatus_incidencia, tipo_resolucion, folio_nota_credito,
+                   monto_nota_credito, comentarios_resolucion, fecha_resolucion, resuelto_por,
+                   observaciones_generales
             FROM recepciones_facturas
             WHERE 1=1
         `;
@@ -469,6 +558,191 @@ const deleteRecepcion = async (id) => {
     }
 };
 
+/**
+ * Guarda una foto de evidencia en la base de datos (foto_blob).
+ */
+const guardarFotoEvidencia = async ({ recepcion_id, partida_id, nombre_archivo, mime_type, tamano_bytes, foto_buffer, subido_por }) => {
+    try {
+        const sql = `
+            INSERT INTO recepciones_evidencias_fotos (
+                recepcion_id, partida_id, nombre_archivo, mime_type, tamano_bytes, foto_blob, subido_por
+            ) VALUES (?, ?, ?, ?, ?, ?, ?)
+        `;
+        const [result] = await pool.query(sql, [
+            recepcion_id,
+            partida_id || null,
+            nombre_archivo || 'evidencia.jpg',
+            mime_type || 'image/jpeg',
+            tamano_bytes || (foto_buffer ? foto_buffer.length : 0),
+            foto_buffer,
+            subido_por || null
+        ]);
+        return result.insertId;
+    } catch (error) {
+        console.error("Error en recepcionRepository.guardarFotoEvidencia:", error);
+        throw error;
+    }
+};
+
+/**
+ * Obtiene el contenido binario (blob) y metadatos de una foto por su ID.
+ */
+const getFotoBlobById = async (id) => {
+    try {
+        const [rows] = await pool.query(
+            `SELECT id, recepcion_id, partida_id, nombre_archivo, mime_type, tamano_bytes, foto_blob 
+             FROM recepciones_evidencias_fotos 
+             WHERE id = ?`,
+            [id]
+        );
+        return rows.length > 0 ? rows[0] : null;
+    } catch (error) {
+        console.error("Error en recepcionRepository.getFotoBlobById:", error);
+        throw error;
+    }
+};
+
+/**
+ * Elimina una foto de evidencia por su ID.
+ */
+const deleteFotoById = async (id) => {
+    try {
+        const [result] = await pool.query(
+            `DELETE FROM recepciones_evidencias_fotos WHERE id = ?`,
+            [id]
+        );
+        return result.affectedRows > 0;
+    } catch (error) {
+        console.error("Error en recepcionRepository.deleteFotoById:", error);
+        throw error;
+    }
+};
+
+/**
+ * Agrega una nota de seguimiento a la bitácora de la recepción.
+ */
+const agregarNotaBitacora = async (recepcion_id, { usuario, comentario }) => {
+    try {
+        const sql = `
+            INSERT INTO recepciones_bitacora_seguimiento (recepcion_id, usuario, comentario)
+            VALUES (?, ?, ?)
+        `;
+        const [result] = await pool.query(sql, [recepcion_id, usuario || 'Comprador', comentario]);
+        return result.insertId;
+    } catch (error) {
+        console.error("Error en recepcionRepository.agregarNotaBitacora:", error);
+        throw error;
+    }
+};
+
+/**
+ * Consulta la bitácora de seguimiento de una recepción.
+ */
+const getBitacoraByRecepcionId = async (recepcion_id) => {
+    try {
+        const [rows] = await pool.query(
+            `SELECT id, recepcion_id, usuario, comentario, fecha 
+             FROM recepciones_bitacora_seguimiento 
+             WHERE recepcion_id = ? 
+             ORDER BY fecha DESC`,
+            [recepcion_id]
+        );
+        return rows;
+    } catch (error) {
+        console.error("Error en recepcionRepository.getBitacoraByRecepcionId:", error);
+        throw error;
+    }
+};
+
+/**
+ * Actualiza el estatus comercial de la incidencia, datos de resolución y partidas modificadas.
+ */
+const actualizarSeguimientoIncidencia = async (id, data) => {
+    const connection = await pool.getConnection();
+    try {
+        await connection.beginTransaction();
+
+        const {
+            estatus_incidencia,
+            tipo_resolucion,
+            folio_nota_credito,
+            monto_nota_credito,
+            comentarios_resolucion,
+            resuelto_por,
+            partidas,
+            nota_bitacora
+        } = data;
+
+        const updateCabeceraSql = `
+            UPDATE recepciones_facturas
+            SET estatus_incidencia = COALESCE(?, estatus_incidencia),
+                tipo_resolucion = ?,
+                folio_nota_credito = ?,
+                monto_nota_credito = ?,
+                comentarios_resolucion = ?,
+                resuelto_por = COALESCE(?, resuelto_por),
+                fecha_resolucion = CASE WHEN ? = 'INCIDENCIA_RESUELTA' THEN NOW() ELSE fecha_resolucion END
+            WHERE id = ?
+        `;
+
+        await connection.query(updateCabeceraSql, [
+            estatus_incidencia || null,
+            tipo_resolucion || null,
+            folio_nota_credito || null,
+            monto_nota_credito !== undefined && monto_nota_credito !== null && monto_nota_credito !== '' ? Number(monto_nota_credito) : null,
+            comentarios_resolucion || null,
+            resuelto_por || null,
+            estatus_incidencia,
+            id
+        ]);
+
+        // Si se enviaron partidas editadas (por ejemplo para corregir clave_interna o agregar notas)
+        if (partidas && Array.isArray(partidas)) {
+            for (const p of partidas) {
+                if (p.id) {
+                    await connection.query(
+                        `UPDATE recepciones_facturas_partidas
+                         SET clave_interna = COALESCE(?, clave_interna),
+                             estatus_resolucion = COALESCE(?, estatus_resolucion),
+                             comentarios_comprador = COALESCE(?, comentarios_comprador)
+                         WHERE id = ? AND recepcion_id = ?`,
+                        [
+                            p.clave_interna || null,
+                            p.estatus_resolucion || null,
+                            p.comentarios_comprador || null,
+                            p.id,
+                            id
+                        ]
+                    );
+                }
+            }
+        }
+
+        // Si se incluye una nota para la bitácora
+        if (nota_bitacora && nota_bitacora.trim() !== '') {
+            await connection.query(
+                `INSERT INTO recepciones_bitacora_seguimiento (recepcion_id, usuario, comentario) VALUES (?, ?, ?)`,
+                [id, resuelto_por || 'Comprador', nota_bitacora.trim()]
+            );
+        } else if (comentarios_resolucion && comentarios_resolucion.trim() !== '') {
+            const textoBitacora = `[${estatus_incidencia || 'SEGUIMIENTO'}] ${tipo_resolucion ? `Tipo: ${tipo_resolucion}. ` : ''}${folio_nota_credito ? `NC: ${folio_nota_credito}. ` : ''}${comentarios_resolucion.trim()}`;
+            await connection.query(
+                `INSERT INTO recepciones_bitacora_seguimiento (recepcion_id, usuario, comentario) VALUES (?, ?, ?)`,
+                [id, resuelto_por || 'Comprador', textoBitacora]
+            );
+        }
+
+        await connection.commit();
+        return { success: true, id, estatus_incidencia };
+    } catch (error) {
+        await connection.rollback();
+        console.error("Error en recepcionRepository.actualizarSeguimientoIncidencia:", error);
+        throw error;
+    } finally {
+        connection.release();
+    }
+};
+
 module.exports = {
     createRecepcion,
     findFacturaExistente,
@@ -479,5 +753,11 @@ module.exports = {
     finalizarRecepcion,
     getMonitoreoCompras,
     marcarOCGenerada,
-    guardarProgresoRecepcion
+    guardarProgresoRecepcion,
+    guardarFotoEvidencia,
+    getFotoBlobById,
+    deleteFotoById,
+    agregarNotaBitacora,
+    getBitacoraByRecepcionId,
+    actualizarSeguimientoIncidencia
 };

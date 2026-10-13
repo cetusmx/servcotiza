@@ -132,7 +132,7 @@ const getDetalle = async (id, marcarEnProceso = false) => {
 /**
  * Finaliza el proceso de recepción física en sucursal.
  */
-const finalizarRecepcion = async (id, { recibido_por, observaciones_generales, partidas }) => {
+const finalizarRecepcion = async (id, { recibido_por, observaciones_generales, partidas, fotos }) => {
     if (!partidas || !Array.isArray(partidas)) {
         throw new Error("Se requiere un arreglo 'partidas' con los resultados del conteo.");
     }
@@ -169,7 +169,8 @@ const finalizarRecepcion = async (id, { recibido_por, observaciones_generales, p
     return await recepcionRepository.finalizarRecepcion(id, {
         recibido_por,
         observaciones_generales,
-        partidas: partidasNormalizadas
+        partidas: partidasNormalizadas,
+        fotos
     });
 };
 
@@ -225,6 +226,80 @@ const eliminarRecepcion = async (id) => {
     return facturaEliminada;
 };
 
+/**
+ * Guarda una foto de evidencia para una recepción o partida.
+ */
+const guardarFotoEvidencia = async ({ recepcion_id, partida_id, nombre_archivo, mime_type, tamano_bytes, foto_base64, subido_por }) => {
+    if (!recepcion_id || !foto_base64) {
+        throw new Error("Se requiere recepcion_id y foto_base64 para guardar evidencia.");
+    }
+    const buffer = Buffer.from(foto_base64.replace(/^data:image\/\w+;base64,/, ''), 'base64');
+    const fotoId = await recepcionRepository.guardarFotoEvidencia({
+        recepcion_id,
+        partida_id: partida_id || null,
+        nombre_archivo: nombre_archivo || 'evidencia.jpg',
+        mime_type: mime_type || 'image/jpeg',
+        tamano_bytes: tamano_bytes || buffer.length,
+        foto_buffer: buffer,
+        subido_por: subido_por || null
+    });
+    return { id: fotoId, recepcion_id, partida_id };
+};
+
+/**
+ * Obtiene el blob binario de una foto de evidencia.
+ */
+const getFotoBlob = async (id) => {
+    const foto = await recepcionRepository.getFotoBlobById(id);
+    if (!foto) {
+        const error = new Error(`Foto con ID ${id} no encontrada.`);
+        error.statusCode = 404;
+        throw error;
+    }
+    return foto;
+};
+
+/**
+ * Elimina una foto de evidencia.
+ */
+const deleteFoto = async (id) => {
+    const deleted = await recepcionRepository.deleteFotoById(id);
+    if (!deleted) {
+        const error = new Error(`No se encontró la foto con ID ${id} para eliminar.`);
+        error.statusCode = 404;
+        throw error;
+    }
+    return { success: true, id };
+};
+
+/**
+ * Agrega una nota de seguimiento a la bitácora.
+ */
+const agregarNotaBitacora = async (recepcion_id, { usuario, comentario }) => {
+    if (!recepcion_id || !comentario || comentario.trim() === '') {
+        throw new Error("Se requiere recepcion_id y un comentario válido.");
+    }
+    const id = await recepcionRepository.agregarNotaBitacora(recepcion_id, { usuario, comentario: comentario.trim() });
+    return { id, recepcion_id, usuario, comentario };
+};
+
+/**
+ * Obtiene la bitácora de seguimiento de una recepción.
+ */
+const getBitacora = async (recepcion_id) => {
+    return await recepcionRepository.getBitacoraByRecepcionId(recepcion_id);
+};
+
+/**
+ * Actualiza el estatus comercial de la incidencia y guarda la resolución.
+ */
+const actualizarSeguimientoIncidencia = async (id, data) => {
+    if (!id) {
+        throw new Error("El ID de la recepción es requerido.");
+    }
+    return await recepcionRepository.actualizarSeguimientoIncidencia(id, data);
+};
+
 module.exports = {
     crearRecepcion,
     validarExistente,
@@ -234,5 +309,11 @@ module.exports = {
     finalizarRecepcion,
     getMonitoreoCompras,
     cerrarOC,
-    guardarProgreso
+    guardarProgreso,
+    guardarFotoEvidencia,
+    getFotoBlob,
+    deleteFoto,
+    agregarNotaBitacora,
+    getBitacora,
+    actualizarSeguimientoIncidencia
 };
