@@ -534,9 +534,9 @@ const deleteRecepcion = async (id) => {
 
         const factura = rows[0];
 
-        if (String(factura.estatus || '').toUpperCase() === 'OC_GENERADA') {
+        if (String(factura.estatus || '').toUpperCase() !== 'PENDIENTE') {
             await connection.rollback();
-            const err = new Error(`No es posible eliminar la factura ${factura.folio_factura} porque ya cuenta con Orden de Compra generada (estatus OC_GENERADA).`);
+            const err = new Error(`No es posible eliminar la factura ${factura.folio_factura} porque ya ha iniciado o completado su recepción en sucursal (estatus actual: ${factura.estatus}). Solo se permite eliminar en estatus PENDIENTE.`);
             err.statusCode = 400;
             throw err;
         }
