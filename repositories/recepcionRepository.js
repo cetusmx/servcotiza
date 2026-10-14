@@ -623,6 +623,23 @@ const deleteFotoById = async (id) => {
  */
 const agregarNotaBitacora = async (recepcion_id, { usuario, comentario }) => {
     try {
+        const [facturaRows] = await pool.query(
+            `SELECT folio_factura, estatus_incidencia FROM recepciones_facturas WHERE id = ?`,
+            [recepcion_id]
+        );
+
+        if (facturaRows.length === 0) {
+            const err = new Error(`La recepción con ID ${recepcion_id} no existe.`);
+            err.statusCode = 404;
+            throw err;
+        }
+
+        if (facturaRows[0].estatus_incidencia === 'INCIDENCIA_RESUELTA') {
+            const err = new Error(`No es posible agregar notas a la bitácora porque la incidencia de la factura ${facturaRows[0].folio_factura} ya se encuentra RESUELTA.`);
+            err.statusCode = 400;
+            throw err;
+        }
+
         const sql = `
             INSERT INTO recepciones_bitacora_seguimiento (recepcion_id, usuario, comentario)
             VALUES (?, ?, ?)
@@ -655,12 +672,34 @@ const getBitacoraByRecepcionId = async (recepcion_id) => {
 };
 
 /**
- * Actualiza el estatus comercial de la incidencia, datos de resolución y partidas modificadas.
+ * Actualiza el estatus comercial de la incidencia, datos de resolución y registra los eventos en la bitácora.
  */
 const actualizarSeguimientoIncidencia = async (id, data) => {
     const connection = await pool.getConnection();
     try {
         await connection.beginTransaction();
+
+        // 1. Consultar estado actual
+        const [actualRows] = await connection.query(
+            `SELECT id, folio_factura, estatus, estatus_incidencia FROM recepciones_facturas WHERE id = ? FOR UPDATE`,
+            [id]
+        );
+
+        if (actualRows.length === 0) {
+            const err = new Error(`La recepción con ID ${id} no existe.`);
+            err.statusCode = 404;
+            throw err;
+        }
+
+        const facturaActual = actualRows[0];
+
+        // 2. Restricción estricta: si ya estaba resuelta, no permitir modificaciones
+        if (facturaActual.estatus_incidencia === 'INCIDENCIA_RESUELTA') {
+            await connection.rollback();
+            const err = new Error(`La incidencia de la factura ${facturaActual.folio_factura} ya se encuentra RESUELTA. No está permitido modificar sus datos de seguimiento ni estatus.`);
+            err.statusCode = 400;
+            throw err;
+        }
 
         const {
             estatus_incidencia,
@@ -696,7 +735,7 @@ const actualizarSeguimientoIncidencia = async (id, data) => {
             id
         ]);
 
-        // Si se enviaron partidas editadas (por ejemplo para corregir clave_interna o agregar notas)
+        // Si se enviaron partidas editadas
         if (partidas && Array.isArray(partidas)) {
             for (const p of partidas) {
                 if (p.id) {
@@ -718,22 +757,54 @@ const actualizarSeguimientoIncidencia = async (id, data) => {
             }
         }
 
-        // Si se incluye una nota para la bitácora
+        // 3. Generación y registro automático de eventos en la bitácora para trazabilidad
+        const estatusAnterior = facturaActual.estatus_incidencia || 'PENDIENTE';
+        const estatusNuevo = estatus_incidencia || estatusAnterior;
+
+        let eventoGenerado = null;
+
+        if (estatusNuevo === 'EN_ACLARACION' && estatusAnterior !== 'EN_ACLARACION') {
+            // Evento: Se comenzó a gestionar la incidencia con el proveedor
+            let detalleTexto = `[EVENTO: INICIO DE GESTIÓN] Se comenzó a gestionar la aclaración de la incidencia con el proveedor.`;
+            if (tipo_resolucion) detalleTexto += ` Solución preliminar: ${tipo_resolucion}.`;
+            if (comentarios_resolucion && comentarios_resolucion.trim()) {
+                detalleTexto += ` Detalle: ${comentarios_resolucion.trim()}`;
+            }
+            eventoGenerado = detalleTexto;
+        } else if (estatusNuevo === 'INCIDENCIA_RESUELTA') {
+            // Evento: Incidencia resuelta
+            let detalleTexto = `[EVENTO: INCIDENCIA RESUELTA] La incidencia ha sido resuelta exitosamente.`;
+            if (tipo_resolucion) detalleTexto += ` Solución: ${tipo_resolucion}.`;
+            if (folio_nota_credito) detalleTexto += ` Folio NC: ${folio_nota_credito}.`;
+            if (monto_nota_credito !== undefined && monto_nota_credito !== null && monto_nota_credito !== '') {
+                detalleTexto += ` Monto bonificado: $${Number(monto_nota_credito).toLocaleString('es-MX', { minimumFractionDigits: 2 })} MXN.`;
+            }
+            if (comentarios_resolucion && comentarios_resolucion.trim()) {
+                detalleTexto += ` Acuerdo comercial: ${comentarios_resolucion.trim()}`;
+            }
+            eventoGenerado = detalleTexto;
+        } else if (comentarios_resolucion && comentarios_resolucion.trim()) {
+            // Actualización intermedia
+            eventoGenerado = `[SEGUIMIENTO] ${tipo_resolucion ? `Tipo: ${tipo_resolucion}. ` : ''}${folio_nota_credito ? `NC: ${folio_nota_credito}. ` : ''}${comentarios_resolucion.trim()}`;
+        }
+
+        if (eventoGenerado) {
+            await connection.query(
+                `INSERT INTO recepciones_bitacora_seguimiento (recepcion_id, usuario, comentario) VALUES (?, ?, ?)`,
+                [id, resuelto_por || 'Comprador', eventoGenerado]
+            );
+        }
+
+        // Si se incluye una nota adicional explícita para la bitácora
         if (nota_bitacora && nota_bitacora.trim() !== '') {
             await connection.query(
                 `INSERT INTO recepciones_bitacora_seguimiento (recepcion_id, usuario, comentario) VALUES (?, ?, ?)`,
                 [id, resuelto_por || 'Comprador', nota_bitacora.trim()]
             );
-        } else if (comentarios_resolucion && comentarios_resolucion.trim() !== '') {
-            const textoBitacora = `[${estatus_incidencia || 'SEGUIMIENTO'}] ${tipo_resolucion ? `Tipo: ${tipo_resolucion}. ` : ''}${folio_nota_credito ? `NC: ${folio_nota_credito}. ` : ''}${comentarios_resolucion.trim()}`;
-            await connection.query(
-                `INSERT INTO recepciones_bitacora_seguimiento (recepcion_id, usuario, comentario) VALUES (?, ?, ?)`,
-                [id, resuelto_por || 'Comprador', textoBitacora]
-            );
         }
 
         await connection.commit();
-        return { success: true, id, estatus_incidencia };
+        return { success: true, id, estatus_incidencia: estatusNuevo };
     } catch (error) {
         await connection.rollback();
         console.error("Error en recepcionRepository.actualizarSeguimientoIncidencia:", error);
