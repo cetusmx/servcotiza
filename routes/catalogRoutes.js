@@ -1,6 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const { getClavesProveedor, getClaveUnitaria, getAlmacenes } = require('../services/firebirdService');
+const {
+    getClavesProveedor,
+    getClaveUnitaria,
+    getAlmacenes,
+    getFamiliaByClave,
+    getCatalogoProductosFirebird,
+    getProductosPorLineaFirebird
+} = require('../services/firebirdService');
 
 // 1. Consulta Masiva (POST)
 router.post('/getclavesproveedor', async (req, res) => {
@@ -40,6 +47,50 @@ router.get('/getalmacenes', async (req, res) => {
         res.status(500).json({ 
             error: "Error al obtener el catálogo de almacenes",
             details: error.message 
+        });
+    }
+});
+
+router.get('/getfamilia-producto', async (req, res) => {
+    try {
+        const { clave } = req.query;
+        if (!clave) {
+            return res.status(400).json({ error: "El parámetro 'clave' es obligatorio" });
+        }
+        const data = await getFamiliaByClave(clave);
+        res.status(200).json(data);
+    } catch (error) {
+        res.status(500).json({
+            error: "Error al obtener la familia del producto desde Firebird",
+            details: error.message
+        });
+    }
+});
+
+router.get('/getcatalogo-firebird', async (req, res) => {
+    try {
+        const data = await getCatalogoProductosFirebird();
+        res.status(200).json(data);
+    } catch (error) {
+        res.status(500).json({
+            error: "Error al obtener el catálogo detallado desde Firebird",
+            details: error.message
+        });
+    }
+});
+
+router.get('/getproductos-linea', async (req, res) => {
+    try {
+        const { linea } = req.query;
+        if (!linea) {
+            return res.status(400).json({ error: "El parámetro 'linea' es obligatorio" });
+        }
+        const data = await getProductosPorLineaFirebird(linea);
+        res.status(200).json(data);
+    } catch (error) {
+        res.status(500).json({
+            error: "Error al obtener los productos de la línea desde Firebird",
+            details: error.message
         });
     }
 });
