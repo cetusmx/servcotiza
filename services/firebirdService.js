@@ -211,6 +211,16 @@ const getProductosPorLineaFirebird = async (linea) => {
     }
 };
 
+const getProductosEtiquetasCaja = async (payload) => {
+    try {
+        const response = await firebirdApi.post('/api/productos/productos-etiquetas-caja', payload);
+        return response.data;
+    } catch (error) {
+        console.error("Error en firebirdService (getProductosEtiquetasCaja):", error.message);
+        throw error;
+    }
+};
+
 module.exports = {
     getClavesProveedor,
     getClaveUnitaria,
@@ -219,5 +229,6 @@ module.exports = {
     getProductosRecepcion,
     getFamiliaByClave,
     getCatalogoProductosFirebird,
-    getProductosPorLineaFirebird
+    getProductosPorLineaFirebird,
+    getProductosEtiquetasCaja
 };

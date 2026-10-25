@@ -11,6 +11,7 @@ const pool = require('./db');
 const catalogRoutes = require('./routes/catalogRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
 const recepcionRoutes = require('./routes/recepcionRoutes');
+const inventarioRoutes = require('./routes/inventarioRoutes');
 
 // CONFIGURACIÓN DE CORS --- COMENTAR EN PRODUCCION
 app.use(cors({
@@ -32,6 +33,7 @@ app.use('/compras', catalogRoutes);
 app.use('/dashboard', dashboardRoutes);
 app.use('/recepcion', recepcionRoutes);
 app.use('/api/v1/recepcion', recepcionRoutes);
+app.use('/inventario', inventarioRoutes);
 
 //Actualizada
 app.post("/insertClaveManualNoRegistrada", async (req, res) => {
