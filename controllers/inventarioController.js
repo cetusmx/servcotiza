@@ -3,16 +3,19 @@ const { getProductosEtiquetasCaja: fetchProductosEtiquetasCaja } = require('../s
 /**
  * POST /inventario/productos-etiquetas-caja
  * Puente hacia Firebird (/api/productos/productos-etiquetas-caja).
- * Acepta tanto { "productos": [...] } como { "claves": [...] }.
+ * Acepta { "linea": [...] }, { "productos": [...] } o { "claves": [...] }.
  */
 const getProductosEtiquetasCaja = async (req, res) => {
     try {
-        const { productos, claves } = req.body || {};
-        const lista = Array.isArray(productos) ? productos : Array.isArray(claves) ? claves : null;
+        const { linea, productos, claves } = req.body || {};
+        const listaValida =
+            (Array.isArray(linea) && linea.length > 0) ||
+            (Array.isArray(productos) && productos.length > 0) ||
+            (Array.isArray(claves) && claves.length > 0);
 
-        if (!lista) {
+        if (!listaValida) {
             return res.status(400).json({
-                error: "Parámetros inválidos. Se requiere un arreglo en 'productos' o 'claves'."
+                error: "Parámetros inválidos. Se requiere un arreglo no vacío en 'linea', 'productos' o 'claves'."
             });
         }
 
